@@ -7,7 +7,7 @@
 "   These motions can be used in normal mode and operator-pending mode (cp.
 "   :help operator). 
 "
-" Source: http://vim.sourceforge.net/tips/tip.php?tip_id=1016
+" Source: VimTip #1016
 "
 " Test:
 "   Tested with VIM 6.3 under Windows XP/x86 and HP-UX 11.0/PA-RISC. 
@@ -66,7 +66,7 @@ omap <silent> 3<Leader>b :call CamelCaseMotion(7, 'b')<CR>
 omap <silent> 3<Leader>b :call CamelCaseMotion(8, 'b')<CR>
 omap <silent> 3<Leader>b :call CamelCaseMotion(9, 'b')<CR>
 
-function! CamelCaseMotion( count, direction )
+function! s:CamelCaseMotion( count, direction )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
@@ -75,6 +75,6 @@ function! CamelCaseMotion( count, direction )
     endwhile
 endfunction
 
-command! -range CamelCaseForwardMotion call CamelCaseMotion(<line2>-<line1>+1, '')
-command! -range CamelCaseBackwardMotion call CamelCaseMotion(<line2>-<line1>+1, 'b')
+command! -range CamelCaseForwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, '')
+command! -range CamelCaseBackwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, 'b')
 
