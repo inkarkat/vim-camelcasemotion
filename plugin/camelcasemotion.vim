@@ -14,6 +14,7 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"	0.02	15-Feb-2006	BF: missing <SID> for omaps. 
 "	0.01	11-Oct-2005	file creation
 
 " Avoid installing twice or when in compatible mode
@@ -44,27 +45,27 @@ nmap <silent> <Leader>b :CamelCaseBackwardMotion<CR>
 " mappings including the counts are defined. 
 
 "omap <Leader>w :call search('\<\<Bar>\u', 'W')<CR>
-omap <silent> <Leader>w :call CamelCaseMotion(1, '')<CR>
-omap <silent> 1<Leader>w :call CamelCaseMotion(1, '')<CR>
-omap <silent> 2<Leader>w :call CamelCaseMotion(2, '')<CR>
-omap <silent> 3<Leader>w :call CamelCaseMotion(3, '')<CR>
-omap <silent> 4<Leader>w :call CamelCaseMotion(4, '')<CR>
-omap <silent> 5<Leader>w :call CamelCaseMotion(5, '')<CR>
-omap <silent> 6<Leader>w :call CamelCaseMotion(6, '')<CR>
-omap <silent> 7<Leader>w :call CamelCaseMotion(7, '')<CR>
-omap <silent> 8<Leader>w :call CamelCaseMotion(8, '')<CR>
-omap <silent> 9<Leader>w :call CamelCaseMotion(9, '')<CR>
+omap <silent> <Leader>w :call <SID>CamelCaseMotion(1, '')<CR>
+omap <silent> 1<Leader>w :call <SID>CamelCaseMotion(1, '')<CR>
+omap <silent> 2<Leader>w :call <SID>CamelCaseMotion(2, '')<CR>
+omap <silent> 3<Leader>w :call <SID>CamelCaseMotion(3, '')<CR>
+omap <silent> 4<Leader>w :call <SID>CamelCaseMotion(4, '')<CR>
+omap <silent> 5<Leader>w :call <SID>CamelCaseMotion(5, '')<CR>
+omap <silent> 6<Leader>w :call <SID>CamelCaseMotion(6, '')<CR>
+omap <silent> 7<Leader>w :call <SID>CamelCaseMotion(7, '')<CR>
+omap <silent> 8<Leader>w :call <SID>CamelCaseMotion(8, '')<CR>
+omap <silent> 9<Leader>w :call <SID>CamelCaseMotion(9, '')<CR>
 "omap <silent> <Leader>b :call search('\<\<Bar>\u', 'Wb')<CR>
-omap <silent> <Leader>b :call CamelCaseMotion(1, 'b')<CR>
-omap <silent> 1<Leader>b :call CamelCaseMotion(1, 'b')<CR>
-omap <silent> 2<Leader>b :call CamelCaseMotion(2, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(3, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(4, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(5, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(6, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(7, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(8, 'b')<CR>
-omap <silent> 3<Leader>b :call CamelCaseMotion(9, 'b')<CR>
+omap <silent> <Leader>b :call <SID>CamelCaseMotion(1, 'b')<CR>
+omap <silent> 1<Leader>b :call <SID>CamelCaseMotion(1, 'b')<CR>
+omap <silent> 2<Leader>b :call <SID>CamelCaseMotion(2, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(3, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(4, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(5, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(6, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(7, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(8, 'b')<CR>
+omap <silent> 3<Leader>b :call <SID>CamelCaseMotion(9, 'b')<CR>
 
 function! s:CamelCaseMotion( count, direction )
     "echo "count is " . a:count
