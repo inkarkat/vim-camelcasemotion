@@ -21,6 +21,7 @@
 "				mapping is complete. ,w is faster to type that
 "				\w (and, because of the left-right touch,
 "				preferred over gw). 
+"				Added visual mode mappings. 
 "	0.02	15-Feb-2006	BF: missing <SID> for omaps. 
 "	0.01	11-Oct-2005	file creation
 
@@ -29,6 +30,20 @@ if exists("loaded_camelcasemotion")
     finish
 endif
 let loaded_camelcasemotion = 1
+
+function! s:CamelCaseMotion( count, direction )
+    "echo "count is " . a:count
+    let l:i = 0
+    while l:i < a:count
+	call search( '\<\|\u', 'W' . a:direction )
+	let l:i = l:i + 1
+    endwhile
+endfunction
+
+command! -range CamelCaseForwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, '')
+command! -range CamelCaseBackwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, 'b')
+
+"------------------------------------------------------------------------------
 
 " Normal mode motions:
 " The optional [count] before the motion is passed to the custom command as a
@@ -74,15 +89,29 @@ omap <silent> 3,b :call <SID>CamelCaseMotion(7, 'b')<CR>
 omap <silent> 3,b :call <SID>CamelCaseMotion(8, 'b')<CR>
 omap <silent> 3,b :call <SID>CamelCaseMotion(9, 'b')<CR>
 
-function! s:CamelCaseMotion( count, direction )
-    "echo "count is " . a:count
-    let l:i = 0
-    while l:i < a:count
-	call search( '\<\|\u', 'W' . a:direction )
-	let l:i = l:i + 1
-    endwhile
-endfunction
-
-command! -range CamelCaseForwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, '')
-command! -range CamelCaseBackwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, 'b')
+" Visual mode motions:
+" This one is more direct, but causes more flickering because the ex command is
+" echoed in the command line. 
+"vmap ,w <Esc>`>:call <SID>CamelCaseMotion(1,'')<CR>v`<o
+vmap ,w <Esc>`>,wv`<o
+vmap 1,w <Esc>`>1,wv`<o
+vmap 2,w <Esc>`>2,wv`<o
+vmap 3,w <Esc>`>3,wv`<o
+vmap 4,w <Esc>`>4,wv`<o
+vmap 5,w <Esc>`>5,wv`<o
+vmap 6,w <Esc>`>6,wv`<o
+vmap 7,w <Esc>`>7,wv`<o
+vmap 8,w <Esc>`>8,wv`<o
+vmap 9,w <Esc>`>9,wv`<o
+"vmap ,b <Esc>`<:call <SID>CamelCaseMotion(1,'b')<CR>v`>o
+vmap ,b <Esc>`<,bv`>o
+vmap 1,b <Esc>`<1,bv`>o
+vmap 2,b <Esc>`<2,bv`>o
+vmap 3,b <Esc>`<3,bv`>o
+vmap 4,b <Esc>`<4,bv`>o
+vmap 5,b <Esc>`<5,bv`>o
+vmap 6,b <Esc>`<6,bv`>o
+vmap 7,b <Esc>`<7,bv`>o
+vmap 8,b <Esc>`<8,bv`>o
+vmap 9,b <Esc>`<9,bv`>o
 
