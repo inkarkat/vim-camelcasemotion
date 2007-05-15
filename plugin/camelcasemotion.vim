@@ -10,11 +10,17 @@
 " CamelCase Example:
 "   set Script31337PathAndNameWithoutExtension11=%~dpn0
 "   set Script31337PathANDNameWITHOUTExtension11=%~dpn0
-" ,w moves to set, script, 31337, path, and, name, without, extension, 11, dpn
+" ,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath, [a]nd,
+"   [n]ame, [without, [e]xtension, [1]1, [d]pn0
+" ,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
 "
 " Underscore_notation Example:
 "   set script_31337_path_and_name_without_extension_11=%~dpn0
 "   set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
+" ,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath, [a]nd,
+"   [n]ame, [without, [e]xtension, [1]1, [d]pn0
+" ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
+"   extensio[n], 1[1], dpn[0]
 "
 " Source: VimTip #1016
 "
@@ -47,17 +53,32 @@ function! s:CamelCaseMotion( count, direction )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
-	" CamelCase: Jump to beginning of either (start of word, Word, WORD,
-	" 123). 
-	" Underscore notation: Jump to the beginning of an underscore-separated
-	" word or number. 
-	call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
+	if a:direction == 'e'
+	    call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
+	elseif a:direction == 'E'
+	    " Note: The "operator forward to end" motion doesn't work properly
+	    " when it reaches the end of line; the final character of the
+	    " moved-over word remains. This is because we have to search for
+	    " '$', because searching for '^' in combination with the 'We' (jump
+	    " to end of search result) does not work. 
+	    call search( '$\|\>.\|\(\a\|\d\)\+_', 'We' )
+	else
+	    " CamelCase: Jump to beginning of either (start of word, Word, WORD,
+	    " 123). 
+	    " Underscore notation: Jump to the beginning of an underscore-separated
+	    " word or number. 
+	    "call search( '\<\|\u', 'W' . a:direction )
+	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
+	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
+	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\u\+\ze\u\|\d\+', 'W' . a:direction )
+	endif
 	let l:i = l:i + 1
     endwhile
 endfunction
 
 command! -range CamelCaseForwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, '')
 command! -range CamelCaseBackwardMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, 'b')
+command! -range CamelCaseForwardToEndMotion call <SID>CamelCaseMotion(<line2>-<line1>+1, 'e')
 
 "------------------------------------------------------------------------------
 
@@ -73,7 +94,10 @@ command! -range CamelCaseBackwardMotion call <SID>CamelCaseMotion(<line2>-<line1
 nmap <silent> ,w :CamelCaseForwardMotion<CR>
 "nmap <silent> ,b :call search('\<\<Bar>\u', 'Wb')<CR>
 nmap <silent> ,b :CamelCaseBackwardMotion<CR>
-
+"
+nmap <silent> ,e :CamelCaseForwardToEndMotion<CR>
+" We do not provide the fourth "backward to end" motion (,E), because it is
+" seldomly used. 
 
 
 " Operator-pending motions:
@@ -104,6 +128,19 @@ omap <silent> 3,b :call <SID>CamelCaseMotion(6, 'b')<CR>
 omap <silent> 3,b :call <SID>CamelCaseMotion(7, 'b')<CR>
 omap <silent> 3,b :call <SID>CamelCaseMotion(8, 'b')<CR>
 omap <silent> 3,b :call <SID>CamelCaseMotion(9, 'b')<CR>
+"
+omap <silent> ,e :call <SID>CamelCaseMotion(1, 'E')<CR>
+omap <silent> 1,e :call <SID>CamelCaseMotion(1, 'E')<CR>
+omap <silent> 2,e :call <SID>CamelCaseMotion(2, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(3, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(4, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(5, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(6, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(7, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(8, 'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(9, 'E')<CR>
+
+
 
 " Visual mode motions:
 " This one is more direct, but causes more flickering because the ex command is
@@ -130,4 +167,15 @@ vmap 6,b <Esc>`<6,bv`>o
 vmap 7,b <Esc>`<7,bv`>o
 vmap 8,b <Esc>`<8,bv`>o
 vmap 9,b <Esc>`<9,bv`>o
+"
+vmap ,e <Esc>`>:call <SID>CamelCaseMotion(1,'E')<CR>v`<o
+vmap 1,e <Esc>`>:call <SID>CamelCaseMotion(1,'E')<CR>v`<o
+vmap 2,e <Esc>`>:call <SID>CamelCaseMotion(2,'E')<CR>v`<o
+vmap 3,e <Esc>`>:call <SID>CamelCaseMotion(3,'E')<CR>v`<o
+vmap 4,e <Esc>`>:call <SID>CamelCaseMotion(4,'E')<CR>v`<o
+vmap 5,e <Esc>`>:call <SID>CamelCaseMotion(5,'E')<CR>v`<o
+vmap 6,e <Esc>`>:call <SID>CamelCaseMotion(6,'E')<CR>v`<o
+vmap 7,e <Esc>`>:call <SID>CamelCaseMotion(7,'E')<CR>v`<o
+vmap 8,e <Esc>`>:call <SID>CamelCaseMotion(8,'E')<CR>v`<o
+vmap 9,e <Esc>`>:call <SID>CamelCaseMotion(9,'E')<CR>v`<o
 
