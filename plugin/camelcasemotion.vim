@@ -7,13 +7,14 @@
 "   These motions can be used in normal mode, operator-pending mode (cp.
 "   :help operator), and visual mode. 
 "
-" Example:
+" CamelCase Example:
 "   set Script31337PathAndNameWithoutExtension11=%~dpn0
 "   set Script31337PathANDNameWITHOUTExtension11=%~dpn0
 " ,w moves to set, script, 31337, path, and, name, without, extension, 11, dpn
 "
-" underscore notation does not (yet) work:
+" Underscore_notation Example:
 "   set script_31337_path_and_name_without_extension_11=%~dpn0
+"   set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
 "
 " Source: VimTip #1016
 "
@@ -46,8 +47,11 @@ function! s:CamelCaseMotion( count, direction )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
-	" Jump to beginning of either (start of word, Word, WORD, 123). 
-	call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
+	" CamelCase: Jump to beginning of either (start of word, Word, WORD,
+	" 123). 
+	" Underscore notation: Jump to the beginning of an underscore-separated
+	" word or number. 
+	call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
 	let l:i = l:i + 1
     endwhile
 endfunction
