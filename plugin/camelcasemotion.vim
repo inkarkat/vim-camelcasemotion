@@ -4,8 +4,16 @@
 "   Defines motions ',w' and ',b' (similar to 'w' and 'b'), which
 "   do not move wordwise (forward/backward), but Camel-wise; i.e. to word
 "   boundaries and uppercase letters. 
-"   These motions can be used in normal mode and operator-pending mode (cp.
-"   :help operator). 
+"   These motions can be used in normal mode, operator-pending mode (cp.
+"   :help operator), and visual mode. 
+"
+" Example:
+"   set Script31337PathAndNameWithoutExtension11=%~dpn0
+"   set Script31337PathANDNameWITHOUTExtension11=%~dpn0
+" ,w moves to set, script, 31337, path, and, name, without, extension, 11, dpn
+"
+" underscore notation does not (yet) work:
+"   set script_31337_path_and_name_without_extension_11=%~dpn0
 "
 " Source: VimTip #1016
 "
@@ -14,6 +22,9 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"	004	16-May-2007	Improved search pattern so that
+"				UppercaseWORDSInBetween and digits are handled,
+"				too. 
 "	003	15-May-2007	Changed mappings from <Leader>w to ,w; 
 "				other \w mappings interfere here, because it's
 "				irritating when the cursor jump doesn't happen
@@ -35,7 +46,8 @@ function! s:CamelCaseMotion( count, direction )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
-	call search( '\<\|\u', 'W' . a:direction )
+	" Jump to beginning of either (start of word, Word, WORD, 123). 
+	call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
 	let l:i = l:i + 1
     endwhile
 endfunction
