@@ -96,12 +96,12 @@ command! -range CamelCaseForwardToEndMotion call <SID>CamelCaseMotion(<line2>-<l
 " actual number of lines in the buffer (i.e. when you execute the motion with a
 " large count near the end of the buffer). 
 
-"nmap <silent> ,w :call search('\<\<Bar>\u', 'W')<CR>
-nmap <silent> ,w :CamelCaseForwardMotion<CR>
-"nmap <silent> ,b :call search('\<\<Bar>\u', 'Wb')<CR>
-nmap <silent> ,b :CamelCaseBackwardMotion<CR>
+"nnoremap <script> <silent> ,w :call search('\<\<Bar>\u', 'W')<CR>
+nnoremap <script> <silent> ,w :CamelCaseForwardMotion<CR>
+"nnoremap <script> <silent> ,b :call search('\<\<Bar>\u', 'Wb')<CR>
+nnoremap <script> <silent> ,b :CamelCaseBackwardMotion<CR>
 "
-nmap <silent> ,e :CamelCaseForwardToEndMotion<CR>
+nnoremap <script> <silent> ,e :CamelCaseForwardToEndMotion<CR>
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used. 
 
@@ -112,75 +112,75 @@ nmap <silent> ,e :CamelCaseForwardToEndMotion<CR>
 " count has been specified. In order to recognize the optional [count], multiple
 " mappings including the counts are defined. 
 
-"omap ,w :call search('\<\<Bar>\u', 'W')<CR>
-omap <silent> ,w :call <SID>CamelCaseMotion(1, '')<CR>
-omap <silent> 1,w :call <SID>CamelCaseMotion(1, '')<CR>
-omap <silent> 2,w :call <SID>CamelCaseMotion(2, '')<CR>
-omap <silent> 3,w :call <SID>CamelCaseMotion(3, '')<CR>
-omap <silent> 4,w :call <SID>CamelCaseMotion(4, '')<CR>
-omap <silent> 5,w :call <SID>CamelCaseMotion(5, '')<CR>
-omap <silent> 6,w :call <SID>CamelCaseMotion(6, '')<CR>
-omap <silent> 7,w :call <SID>CamelCaseMotion(7, '')<CR>
-omap <silent> 8,w :call <SID>CamelCaseMotion(8, '')<CR>
-omap <silent> 9,w :call <SID>CamelCaseMotion(9, '')<CR>
-"omap <silent> ,b :call search('\<\<Bar>\u', 'Wb')<CR>
-omap <silent> ,b :call <SID>CamelCaseMotion(1, 'b')<CR>
-omap <silent> 1,b :call <SID>CamelCaseMotion(1, 'b')<CR>
-omap <silent> 2,b :call <SID>CamelCaseMotion(2, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(3, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(4, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(5, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(6, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(7, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(8, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(9, 'b')<CR>
+"onoremap <script> ,w :call search('\<\<Bar>\u', 'W')<CR>
+onoremap <script> <silent> ,w :call <SID>CamelCaseMotion(1, '')<CR>
+onoremap <script> <silent> 1,w :call <SID>CamelCaseMotion(1, '')<CR>
+onoremap <script> <silent> 2,w :call <SID>CamelCaseMotion(2, '')<CR>
+onoremap <script> <silent> 3,w :call <SID>CamelCaseMotion(3, '')<CR>
+onoremap <script> <silent> 4,w :call <SID>CamelCaseMotion(4, '')<CR>
+onoremap <script> <silent> 5,w :call <SID>CamelCaseMotion(5, '')<CR>
+onoremap <script> <silent> 6,w :call <SID>CamelCaseMotion(6, '')<CR>
+onoremap <script> <silent> 7,w :call <SID>CamelCaseMotion(7, '')<CR>
+onoremap <script> <silent> 8,w :call <SID>CamelCaseMotion(8, '')<CR>
+onoremap <script> <silent> 9,w :call <SID>CamelCaseMotion(9, '')<CR>
+"onoremap <script> <silent> ,b :call search('\<\<Bar>\u', 'Wb')<CR>
+onoremap <script> <silent> ,b :call <SID>CamelCaseMotion(1, 'b')<CR>
+onoremap <script> <silent> 1,b :call <SID>CamelCaseMotion(1, 'b')<CR>
+onoremap <script> <silent> 2,b :call <SID>CamelCaseMotion(2, 'b')<CR>
+onoremap <script> <silent> 3,b :call <SID>CamelCaseMotion(3, 'b')<CR>
+onoremap <script> <silent> 4,b :call <SID>CamelCaseMotion(4, 'b')<CR>
+onoremap <script> <silent> 5,b :call <SID>CamelCaseMotion(5, 'b')<CR>
+onoremap <script> <silent> 6,b :call <SID>CamelCaseMotion(6, 'b')<CR>
+onoremap <script> <silent> 7,b :call <SID>CamelCaseMotion(7, 'b')<CR>
+onoremap <script> <silent> 8,b :call <SID>CamelCaseMotion(8, 'b')<CR>
+onoremap <script> <silent> 9,b :call <SID>CamelCaseMotion(9, 'b')<CR>
 "
-omap <silent> ,e :call <SID>CamelCaseMotion(1, 'E')<CR>
-omap <silent> 1,e :call <SID>CamelCaseMotion(1, 'E')<CR>
-omap <silent> 2,e :call <SID>CamelCaseMotion(2, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(3, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(4, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(5, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(6, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(7, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(8, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(9, 'E')<CR>
+onoremap <script> <silent> ,e :call <SID>CamelCaseMotion(1, 'E')<CR>
+onoremap <script> <silent> 1,e :call <SID>CamelCaseMotion(1, 'E')<CR>
+onoremap <script> <silent> 2,e :call <SID>CamelCaseMotion(2, 'E')<CR>
+onoremap <script> <silent> 3,e :call <SID>CamelCaseMotion(3, 'E')<CR>
+onoremap <script> <silent> 4,e :call <SID>CamelCaseMotion(4, 'E')<CR>
+onoremap <script> <silent> 5,e :call <SID>CamelCaseMotion(5, 'E')<CR>
+onoremap <script> <silent> 6,e :call <SID>CamelCaseMotion(6, 'E')<CR>
+onoremap <script> <silent> 7,e :call <SID>CamelCaseMotion(7, 'E')<CR>
+onoremap <script> <silent> 8,e :call <SID>CamelCaseMotion(8, 'E')<CR>
+onoremap <script> <silent> 9,e :call <SID>CamelCaseMotion(9, 'E')<CR>
 
 
 " Visual mode motions:
 " This one is more direct, but causes more flickering because the ex command is
 " echoed in the command line. 
-"vmap ,w <Esc>`>:call <SID>CamelCaseMotion(1,'')<CR>v`<o
-vmap ,w <Esc>`>,wv`<o
-vmap 1,w <Esc>`>1,wv`<o
-vmap 2,w <Esc>`>2,wv`<o
-vmap 3,w <Esc>`>3,wv`<o
-vmap 4,w <Esc>`>4,wv`<o
-vmap 5,w <Esc>`>5,wv`<o
-vmap 6,w <Esc>`>6,wv`<o
-vmap 7,w <Esc>`>7,wv`<o
-vmap 8,w <Esc>`>8,wv`<o
-vmap 9,w <Esc>`>9,wv`<o
-"vmap ,b <Esc>`<:call <SID>CamelCaseMotion(1,'b')<CR>v`>o
-vmap ,b <Esc>`<,bv`>o
-vmap 1,b <Esc>`<1,bv`>o
-vmap 2,b <Esc>`<2,bv`>o
-vmap 3,b <Esc>`<3,bv`>o
-vmap 4,b <Esc>`<4,bv`>o
-vmap 5,b <Esc>`<5,bv`>o
-vmap 6,b <Esc>`<6,bv`>o
-vmap 7,b <Esc>`<7,bv`>o
-vmap 8,b <Esc>`<8,bv`>o
-vmap 9,b <Esc>`<9,bv`>o
+"vnoremap <script> ,w <Esc>`>:call <SID>CamelCaseMotion(1,'')<CR>v`<o
+vnoremap <script> ,w <Esc>`>,wv`<o
+vnoremap <script> 1,w <Esc>`>1,wv`<o
+vnoremap <script> 2,w <Esc>`>2,wv`<o
+vnoremap <script> 3,w <Esc>`>3,wv`<o
+vnoremap <script> 4,w <Esc>`>4,wv`<o
+vnoremap <script> 5,w <Esc>`>5,wv`<o
+vnoremap <script> 6,w <Esc>`>6,wv`<o
+vnoremap <script> 7,w <Esc>`>7,wv`<o
+vnoremap <script> 8,w <Esc>`>8,wv`<o
+vnoremap <script> 9,w <Esc>`>9,wv`<o
+"vnoremap <script> ,b <Esc>`<:call <SID>CamelCaseMotion(1,'b')<CR>v`>o
+vnoremap <script> ,b <Esc>`<,bv`>o
+vnoremap <script> 1,b <Esc>`<1,bv`>o
+vnoremap <script> 2,b <Esc>`<2,bv`>o
+vnoremap <script> 3,b <Esc>`<3,bv`>o
+vnoremap <script> 4,b <Esc>`<4,bv`>o
+vnoremap <script> 5,b <Esc>`<5,bv`>o
+vnoremap <script> 6,b <Esc>`<6,bv`>o
+vnoremap <script> 7,b <Esc>`<7,bv`>o
+vnoremap <script> 8,b <Esc>`<8,bv`>o
+vnoremap <script> 9,b <Esc>`<9,bv`>o
 "
-vmap ,e <Esc>`>:call <SID>CamelCaseMotion(1,'E')<CR>v`<o
-vmap 1,e <Esc>`>:call <SID>CamelCaseMotion(1,'E')<CR>v`<o
-vmap 2,e <Esc>`>:call <SID>CamelCaseMotion(2,'E')<CR>v`<o
-vmap 3,e <Esc>`>:call <SID>CamelCaseMotion(3,'E')<CR>v`<o
-vmap 4,e <Esc>`>:call <SID>CamelCaseMotion(4,'E')<CR>v`<o
-vmap 5,e <Esc>`>:call <SID>CamelCaseMotion(5,'E')<CR>v`<o
-vmap 6,e <Esc>`>:call <SID>CamelCaseMotion(6,'E')<CR>v`<o
-vmap 7,e <Esc>`>:call <SID>CamelCaseMotion(7,'E')<CR>v`<o
-vmap 8,e <Esc>`>:call <SID>CamelCaseMotion(8,'E')<CR>v`<o
-vmap 9,e <Esc>`>:call <SID>CamelCaseMotion(9,'E')<CR>v`<o
+vnoremap <script> ,e <Esc>`>:call <SID>CamelCaseMotion(1,'E')<CR>v`<o
+vnoremap <script> 1,e <Esc>`>:call <SID>CamelCaseMotion(1,'E')<CR>v`<o
+vnoremap <script> 2,e <Esc>`>:call <SID>CamelCaseMotion(2,'E')<CR>v`<o
+vnoremap <script> 3,e <Esc>`>:call <SID>CamelCaseMotion(3,'E')<CR>v`<o
+vnoremap <script> 4,e <Esc>`>:call <SID>CamelCaseMotion(4,'E')<CR>v`<o
+vnoremap <script> 5,e <Esc>`>:call <SID>CamelCaseMotion(5,'E')<CR>v`<o
+vnoremap <script> 6,e <Esc>`>:call <SID>CamelCaseMotion(6,'E')<CR>v`<o
+vnoremap <script> 7,e <Esc>`>:call <SID>CamelCaseMotion(7,'E')<CR>v`<o
+vnoremap <script> 8,e <Esc>`>:call <SID>CamelCaseMotion(8,'E')<CR>v`<o
+vnoremap <script> 9,e <Esc>`>:call <SID>CamelCaseMotion(9,'E')<CR>v`<o
 
