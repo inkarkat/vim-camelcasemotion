@@ -1,6 +1,6 @@
 " camelcasemotion.vim: Mappings for motion through CamelCaseWords. 
 "
-" Usage:
+" USAGE:
 "   Defines motions ',w', ',b' and ',e' (similar to 'w', 'b', 'e'), which
 "   do not move wordwise (forward/backward), but Camel-wise; i.e. to word
 "   boundaries and uppercase letters. Also works on underscore notation, where
@@ -8,7 +8,7 @@
 "   These motions can be used in normal mode, operator-pending mode (cp.
 "   :help operator), and visual mode. 
 "
-" Example:
+" EXAMPLE:
 "   (CamelCase:)
 "   set Script31337PathAndNameWithoutExtension11=%~dpn0
 "   set Script31337PathANDNameWITHOUTExtension11=%~dpn0
