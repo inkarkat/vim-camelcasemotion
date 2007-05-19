@@ -25,10 +25,15 @@
 " Source: vimtip #1016
 "
 " TODO:
-" - BUG: visual-mode [1,2,3],e on pure CamelCase mistakenly marks [2,4,6] words. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"	006	20-May-2007	BF: visual mode [1,2,3],e on pure CamelCase
+"				mistakenly marks [2,4,6] words. If the cursor is
+"				on a uppercase letter, the search pattern
+"				'\u\l\+' doesn't match at the cursor position,
+"				so another match won. Changed search pattern
+"				from '\l\+', 
 "	005	16-May-2007	Added support for underscore notation. 
 "				Added support for "forward to end of word"
 "				(',e') motion. 
@@ -57,17 +62,23 @@ function! s:CamelCaseMotion( count, direction )
     let l:i = 0
     while l:i < a:count
 	if a:direction == 'e'
+	    " Normal mode forward to end motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\u\+\ze\u\l\|\d\+', 'We' )
 	elseif a:direction == 'E'
+	    " Operator-pending mode forward to end motion. 
+	    "
 	    " Note: The "operator forward to end" motion doesn't work properly
 	    " when it reaches the end of line; the final character of the
 	    " moved-over word remains. This is because we have to search for
 	    " '$', because searching for '^' in combination with the 'We' (jump
 	    " to end of search result) does not work. 
 	    "call search( '$\|\>.\|\(\a\|\d\)\+_', 'We' )
-	    call search( '$\|\>.\|\(\a\|\d\)\+_\|\u\l\+.\|\u\u\+\ze\l\|\d\+.', 'We' )
+	    call search( '$\|\>.\|\(\a\|\d\)\+_\|\l\+.\|\u\u\+\ze\l\|\d\+.', 'We' )
 	else
+	    " Forward (a:direction == '') and backward (a:direction == 'b')
+	    " motion. 
+	    "
 	    " CamelCase: Jump to beginning of either (start of word, Word, WORD,
 	    " 123). 
 	    " Underscore notation: Jump to the beginning of an underscore-separated
@@ -116,38 +127,38 @@ nmap <silent> ,e :CamelCaseForwardToEndMotion<CR>
 " mappings including the counts are defined. 
 
 "omap ,w :call search('\<\<Bar>\u', 'W')<CR>
-omap <silent> ,w :call <SID>CamelCaseMotion(1, '')<CR>
-omap <silent> 1,w :call <SID>CamelCaseMotion(1, '')<CR>
-omap <silent> 2,w :call <SID>CamelCaseMotion(2, '')<CR>
-omap <silent> 3,w :call <SID>CamelCaseMotion(3, '')<CR>
-omap <silent> 4,w :call <SID>CamelCaseMotion(4, '')<CR>
-omap <silent> 5,w :call <SID>CamelCaseMotion(5, '')<CR>
-omap <silent> 6,w :call <SID>CamelCaseMotion(6, '')<CR>
-omap <silent> 7,w :call <SID>CamelCaseMotion(7, '')<CR>
-omap <silent> 8,w :call <SID>CamelCaseMotion(8, '')<CR>
-omap <silent> 9,w :call <SID>CamelCaseMotion(9, '')<CR>
-"omap <silent> ,b :call search('\<\<Bar>\u', 'Wb')<CR>
-omap <silent> ,b :call <SID>CamelCaseMotion(1, 'b')<CR>
-omap <silent> 1,b :call <SID>CamelCaseMotion(1, 'b')<CR>
-omap <silent> 2,b :call <SID>CamelCaseMotion(2, 'b')<CR>
-omap <silent> 3,b :call <SID>CamelCaseMotion(3, 'b')<CR>
-omap <silent> 4,b :call <SID>CamelCaseMotion(4, 'b')<CR>
-omap <silent> 5,b :call <SID>CamelCaseMotion(5, 'b')<CR>
-omap <silent> 6,b :call <SID>CamelCaseMotion(6, 'b')<CR>
-omap <silent> 7,b :call <SID>CamelCaseMotion(7, 'b')<CR>
-omap <silent> 8,b :call <SID>CamelCaseMotion(8, 'b')<CR>
-omap <silent> 9,b :call <SID>CamelCaseMotion(9, 'b')<CR>
+omap <silent> ,w :call <SID>CamelCaseMotion(1,'')<CR>
+omap <silent> 1,w :call <SID>CamelCaseMotion(1,'')<CR>
+omap <silent> 2,w :call <SID>CamelCaseMotion(2,'')<CR>
+omap <silent> 3,w :call <SID>CamelCaseMotion(3,'')<CR>
+omap <silent> 4,w :call <SID>CamelCaseMotion(4,'')<CR>
+omap <silent> 5,w :call <SID>CamelCaseMotion(5,'')<CR>
+omap <silent> 6,w :call <SID>CamelCaseMotion(6,'')<CR>
+omap <silent> 7,w :call <SID>CamelCaseMotion(7,'')<CR>
+omap <silent> 8,w :call <SID>CamelCaseMotion(8,'')<CR>
+omap <silent> 9,w :call <SID>CamelCaseMotion(9,'')<CR>
+"omap <silent> ,b :call search('\<\<Bar>\u','Wb')<CR>
+omap <silent> ,b :call <SID>CamelCaseMotion(1,'b')<CR>
+omap <silent> 1,b :call <SID>CamelCaseMotion(1,'b')<CR>
+omap <silent> 2,b :call <SID>CamelCaseMotion(2,'b')<CR>
+omap <silent> 3,b :call <SID>CamelCaseMotion(3,'b')<CR>
+omap <silent> 4,b :call <SID>CamelCaseMotion(4,'b')<CR>
+omap <silent> 5,b :call <SID>CamelCaseMotion(5,'b')<CR>
+omap <silent> 6,b :call <SID>CamelCaseMotion(6,'b')<CR>
+omap <silent> 7,b :call <SID>CamelCaseMotion(7,'b')<CR>
+omap <silent> 8,b :call <SID>CamelCaseMotion(8,'b')<CR>
+omap <silent> 9,b :call <SID>CamelCaseMotion(9,'b')<CR>
 "
-omap <silent> ,e :call <SID>CamelCaseMotion(1, 'E')<CR>
-omap <silent> 1,e :call <SID>CamelCaseMotion(1, 'E')<CR>
-omap <silent> 2,e :call <SID>CamelCaseMotion(2, 'E')<CR>
-omap <silent> 3,e :call <SID>CamelCaseMotion(3, 'E')<CR>
-omap <silent> 4,e :call <SID>CamelCaseMotion(4, 'E')<CR>
-omap <silent> 5,e :call <SID>CamelCaseMotion(5, 'E')<CR>
-omap <silent> 6,e :call <SID>CamelCaseMotion(6, 'E')<CR>
-omap <silent> 7,e :call <SID>CamelCaseMotion(7, 'E')<CR>
-omap <silent> 8,e :call <SID>CamelCaseMotion(8, 'E')<CR>
-omap <silent> 9,e :call <SID>CamelCaseMotion(9, 'E')<CR>
+omap <silent> ,e :call <SID>CamelCaseMotion(1,'E')<CR>
+omap <silent> 1,e :call <SID>CamelCaseMotion(1,'E')<CR>
+omap <silent> 2,e :call <SID>CamelCaseMotion(2,'E')<CR>
+omap <silent> 3,e :call <SID>CamelCaseMotion(3,'E')<CR>
+omap <silent> 4,e :call <SID>CamelCaseMotion(4,'E')<CR>
+omap <silent> 5,e :call <SID>CamelCaseMotion(5,'E')<CR>
+omap <silent> 6,e :call <SID>CamelCaseMotion(6,'E')<CR>
+omap <silent> 7,e :call <SID>CamelCaseMotion(7,'E')<CR>
+omap <silent> 8,e :call <SID>CamelCaseMotion(8,'E')<CR>
+omap <silent> 9,e :call <SID>CamelCaseMotion(9,'E')<CR>
 
 
 " Visual mode motions:
