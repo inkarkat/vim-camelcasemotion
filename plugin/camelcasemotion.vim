@@ -24,6 +24,9 @@
 "
 " Source: vimtip #1016
 "
+" TODO:
+" - BUG: visual-mode [1,2,3],e on pure CamelCase mistakenly marks [2,4,6] words. 
+"
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
 "	005	16-May-2007	Added support for underscore notation. 
