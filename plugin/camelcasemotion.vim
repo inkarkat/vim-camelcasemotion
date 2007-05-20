@@ -1,5 +1,7 @@
-" camelcasemotion.vim: Mappings for motion through CamelCaseWords. 
+" camelcasemotion.vim: Mappings for motion through CamelCaseWords and
+" underscore_notation. 
 "
+" DESCRIPTION:
 " USAGE:
 "   Defines motions ',w', ',b' and ',e' (similar to 'w', 'b', 'e'), which
 "   do not move wordwise (forward/backward), but Camel-wise; i.e. to word
@@ -22,10 +24,20 @@
 " ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
 "   extensio[n], 1[1], dpn[0]
 "
-" Source: vimtip #1016
+" INSTALLATION:
+"   Put the script into your user or system VIM plugin directory (e.g.
+"   ~/.vim/plugin). 
 "
+" DEPENDENCIES:
+" CONFIGURATION:
+" LIMITATIONS:
+" ASSUMPTIONS:
 " TODO:
 "
+" Copyright: (C) 2007 by Ingo Karkat
+"   The VIM LICENSE applies to this script; see ':help copyright'. 
+"
+" Source: vimtip #1016
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
 "	006	20-May-2007	BF: visual mode [1,2,3],e on pure CamelCase
