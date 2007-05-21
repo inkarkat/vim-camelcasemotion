@@ -11,33 +11,40 @@
 "   :help operator), and visual mode. 
 "
 " EXAMPLE:
-"   (CamelCase:)
-"   set Script31337PathAndNameWithoutExtension11=%~dpn0
-"   set Script31337PathANDNameWITHOUTExtension11=%~dpn0
-"   (underscore_notation:)
-"   set script_31337_path_and_name_without_extension_11=%~dpn0
-"   set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
+"   Given the following CamelCase identifiers in a source code fragment:
+"	set Script31337PathAndNameWithoutExtension11=%~dpn0
+"	set Script31337PathANDNameWITHOUTExtension11=%~dpn0
+"   and the corresponding identifiers in underscore_notation:
+"	set script_31337_path_and_name_without_extension_11=%~dpn0
+"	set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
 "
-" ,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath, [a]nd,
-"   [n]ame, [without, [e]xtension, [1]1, [d]pn0
-" ,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
-" ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
-"   extensio[n], 1[1], dpn[0]
+"   ,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath,
+"	[a]nd, [n]ame, [without, [e]xtension, [1]1, [d]pn0
+"   ,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
+"   ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
+"	extensio[n], 1[1], dpn[0]
 "
 " INSTALLATION:
 "   Put the script into your user or system VIM plugin directory (e.g.
 "   ~/.vim/plugin). 
 "
 " DEPENDENCIES:
+"   - Requires VIM 6.0 or higher for limited functionality (,e motions do not
+"     work correctly and move like ,w).  
+"   - Requires VIM 7.0 or higher for full functionality. 
+"
 " CONFIGURATION:
 " LIMITATIONS:
+"   - The operator-pending and visual mode motions are limited to a maximum
+"     [count] of 9. 
+"
 " ASSUMPTIONS:
 " TODO:
 "
 " Copyright: (C) 2007 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
-" Source: vimtip #1016
+" Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
 "	006	20-May-2007	BF: visual mode [1,2,3],e on pure CamelCase
@@ -64,7 +71,7 @@
 "	0.01	11-Oct-2005	file creation
 
 " Avoid installing twice or when in compatible mode
-if exists("loaded_camelcasemotion")
+if exists("loaded_camelcasemotion") || (v:version < 600)
     finish
 endif
 let loaded_camelcasemotion = 1
