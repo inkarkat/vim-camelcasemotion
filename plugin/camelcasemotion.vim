@@ -2,13 +2,22 @@
 " underscore_notation. 
 "
 " DESCRIPTION:
+"   VIM provides many built-in motions, e.g. to move to the next word, or
+"   end of the current word. Most programming languages use either CamelCase
+"   ("anIdentifier") or underscore_notation ("an_identifier") naming
+"   conventions for identifiers. The best way to navigate inside those
+"   identifiers using VIM built-in motions is the '[count]f{char}' motion, i.e.
+"   'f<uppercase char>' or 'f_', respectively. But we can make this easier: 
+"
+"   This script defines motions ',w', ',b' and ',e' (similar to 'w', 'b', 'e'),
+"   which do not move word-wise (forward/backward), but Camel-wise; i.e. to word
+"   boundaries and uppercase letters. The motions also work on underscore
+"   notation, where words are delimited by underscore ('_') characters. 
+"
 " USAGE:
-"   Defines motions ',w', ',b' and ',e' (similar to 'w', 'b', 'e'), which
-"   do not move wordwise (forward/backward), but Camel-wise; i.e. to word
-"   boundaries and uppercase letters. Also works on underscore notation, where
-"   words are delimited by underscore ('_') characters. 
-"   These motions can be used in normal mode, operator-pending mode (cp.
-"   :help operator), and visual mode. 
+"   Use the new motions ',w', ',b' and ',e' in normal mode, operator-pending
+"   mode (cp. :help operator), and visual mode. For example, type 'bc,w' to
+"   change 'Camel' in 'CamelCase' to something else. 
 "
 " EXAMPLE:
 "   Given the following CamelCase identifiers in a source code fragment:
@@ -19,7 +28,7 @@
 "	set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
 "
 "   ,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath,
-"	[a]nd, [n]ame, [without, [e]xtension, [1]1, [d]pn0
+"	[a]nd, [n]ame, [w]ithout, [e]xtension, [1]1, [d]pn0
 "   ,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
 "   ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
 "	extensio[n], 1[1], dpn[0]
@@ -34,11 +43,13 @@
 "   - Requires VIM 7.0 or higher for full functionality. 
 "
 " CONFIGURATION:
+"
 " LIMITATIONS:
 "   - The operator-pending and visual mode motions are limited to a maximum
 "     [count] of 9. 
 "
 " ASSUMPTIONS:
+"
 " TODO:
 "
 " Copyright: (C) 2007 by Ingo Karkat
@@ -47,6 +58,7 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.00.007	22-May-2007	Added documentation for publication. 
 "	006	20-May-2007	BF: visual mode [1,2,3],e on pure CamelCase
 "				mistakenly marks [2,4,6] words. If the cursor is
 "				on a uppercase letter, the search pattern
