@@ -49,9 +49,13 @@
 " ASSUMPTIONS:
 "
 " KNOWN PROBLEMS:
-"   - Degenerate CamelCaseWords that consist of only a single uppercase letter
-"     (e.g. "P" in "MapPRoblem") are skipped by all motions. Thanks to Joseph
-"     Barker for reporting this. 
+"   - A degenerate CamelCaseWord containing '\U\u\d' (e.g. "MaP1Roblem")
+"     confuses the operator-pending and visual mode ,e mapping. It'll skip "P"
+"     and select "P1" in one step. As a workaround, use ',w' instead of ',e';
+"     those two mappings have the same effect on CamelCaseWords, anyway. 
+"   - The operator-pending and visual mode ,e mapping doesn't work properly when
+"     it reaches the end of line; the final character of the moved-over "word"
+"     remains. As a workaround, use the default 'e' motion instead of ',e'. 
 "
 " TODO:
 "
@@ -61,6 +65,14 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.10.009	28-May-2007	BF: Degenerate CamelCaseWords that consist of
+"				only a single uppercase letter (e.g. "P" in
+"				"MapPRoblem") are skipped by all motions. Thanks
+"				to Joseph Barker for reporting this. 
+"				BF: In CamelCaseWords that consist of uppercase
+"				letters followed by decimals (e.g.
+"				"MyUPPER123Problem", the uppercase "word" is
+"				skipped by all motions. 
 "   1.10.008	28-May-2007	Incorporated major improvements and
 "				simplifications done by Joseph Barker:
 "				Operator-pending and visual mode motions now
@@ -109,19 +121,25 @@ function! s:CamelCaseMotion( direction, count )
     let l:i = 0
     while l:i < a:count
 	if a:direction == 'e'
-	    " Normal mode forward to end motion. 
+	    " Normal mode "forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
-	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\u\+\ze\u\l\|\d\+', 'We' )
+	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
 	elseif a:direction == 'E'
-	    " Operator-pending mode forward to end motion. 
+	    " Operator-pending and visual mode "forward to end" motion. 
 	    "
-	    " Note: The "operator forward to end" motion doesn't work properly
+	    " The difference between normal mode, operator-pending and visual
+	    " mode is that in the latter two, the motion must go _past_ the
+	    " final "word" character, so that all characters of the "word" are
+	    " selected. This is mostly achieved by appending a '.' to the regexp
+	    " branches. 
+	    "
+	    " Note: This "forward to end" motion doesn't work properly
 	    " when it reaches the end of line; the final character of the
 	    " moved-over word remains. This is because we have to search for
 	    " '$', because searching for '^' in combination with the 'We' (jump
 	    " to end of search result) does not work. 
 	    "call search( '$\|\>.\|\(\a\|\d\)\+_', 'We' )
-	    call search( '$\|\>.\|\(\a\|\d\)\+_\|\l\+.\|\u\u\+\ze\l\|\d\+.', 'We' )
+	    call search( '$\|\>.\|\(\a\|\d\)\+_\|\l\+.\|\u\+\ze\l\|\u\+\d\|\d\+.', 'We' )
 	else
 	    " Forward (a:direction == '') and backward (a:direction == 'b')
 	    " motion. 
@@ -133,7 +151,7 @@ function! s:CamelCaseMotion( direction, count )
 	    "call search( '\<\|\u', 'W' . a:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
-	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\u\+\ze\u\l\|\d\+', 'W' . a:direction )
+	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'W' . a:direction )
 	endif
 	let l:i = l:i + 1
     endwhile
