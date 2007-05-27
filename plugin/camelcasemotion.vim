@@ -48,6 +48,11 @@
 "
 " ASSUMPTIONS:
 "
+" KNOWN PROBLEMS:
+"   - Degenerate CamelCaseWords that consist of only a single uppercase letter
+"     (e.g. "P" in "MapPRoblem") are skipped by all motions. Thanks to Joseph
+"     Barker for reporting this. 
+"
 " TODO:
 "
 " Copyright: (C) 2007 by Ingo Karkat
@@ -173,3 +178,4 @@ vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion( 'w', 1 )"<CR><CR>m`gvg``
 vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion( 'b', 1 )"<CR><CR>m`gvg``
 vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion( 'E', 1 )"<CR><CR>m`gvg``
 
+" vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
