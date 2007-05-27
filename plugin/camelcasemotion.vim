@@ -139,7 +139,13 @@ function! s:CamelCaseMotion( direction, count )
 	    " '$', because searching for '^' in combination with the 'We' (jump
 	    " to end of search result) does not work. 
 	    "call search( '$\|\>.\|\(\a\|\d\)\+_', 'We' )
-	    call search( '$\|\>.\|\(\a\|\d\)\+_\|\l\+.\|\u\+\ze\l\|\u\+\d\|\d\+.', 'We' )
+	    "call search( '$\|\>.\|\(\a\|\d\)\+_\|\l\+.\|\u\+\ze\l\|\u\+\d\|\d\+.', 'We' )
+	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
+	    let l:save_ww = &ww
+	    set ww+=l
+	    normal l
+	    "call cursor(0,col('.') + 1, 1)
+	    let &ww = l:save_ww
 	else
 	    " Forward (a:direction == '') and backward (a:direction == 'b')
 	    " motion. 
@@ -178,6 +184,9 @@ nmap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'e', v:count1 )<CR>
 omap <silent> ,w :<C-U>call <SID>CamelCaseMotion( 'w', v:count1 )<CR>
 omap <silent> ,b :<C-U>call <SID>CamelCaseMotion( 'b', v:count1 )<CR>
 omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
+"omap <silent> ,e :<C-U>let save_ve=&ve<bar>set ve=all<bar>call <SID>CamelCaseMotion( 'e', v:count1 )<bar>normal l<bar>let &ve=save_ve<CR>
+"omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'e', v:count1 )<bar>normal l<CR>
+"omap <silent> ,e :<C-U>let saww_ww=&ww<bar>set ww+=l<bar>call <SID>CamelCaseMotion( 'e', v:count1 )<bar>normal l<bar>let &ww=saww_ww<CR>
 
 
 " Visual mode motions:
@@ -194,6 +203,6 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
 " use ',b' to shink the selection to "CamelCase". 
 vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion( 'w', 1 )"<CR><CR>m`gvg``
 vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion( 'b', 1 )"<CR><CR>m`gvg``
-vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion( 'E', 1 )"<CR><CR>m`gvg``
+vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion( 'e', 1 )"<CR><CR>m`gvg``l
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
