@@ -120,32 +120,29 @@ function! s:CamelCaseMotion( direction, count )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
-	if a:direction == 'e'
-	    " Normal mode "forward to end" motion. 
+	if a:direction == 'e' || a:direction == 'E'
+	    " "Forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
-	elseif a:direction == 'E'
-	    " Operator-pending and visual mode "forward to end" motion. 
-	    "
-	    " The difference between normal mode, operator-pending and visual
-	    " mode is that in the latter two, the motion must go _past_ the
-	    " final "word" character, so that all characters of the "word" are
-	    " selected. This is mostly achieved by appending a '.' to the regexp
-	    " branches. 
-	    "
-	    " Note: This "forward to end" motion doesn't work properly
-	    " when it reaches the end of line; the final character of the
-	    " moved-over word remains. This is because we have to search for
-	    " '$', because searching for '^' in combination with the 'We' (jump
-	    " to end of search result) does not work. 
-	    "call search( '$\|\>.\|\(\a\|\d\)\+_', 'We' )
-	    "call search( '$\|\>.\|\(\a\|\d\)\+_\|\l\+.\|\u\+\ze\l\|\u\+\d\|\d\+.', 'We' )
-	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
-	    let l:save_ww = &ww
-	    set ww+=l
-	    normal l
-	    "call cursor(0,col('.') + 1, 1)
-	    let &ww = l:save_ww
+	    if a:direction == 'E'
+		" Operator-pending and visual mode "forward to end" motion. 
+		"
+		" The difference between normal mode, operator-pending and visual
+		" mode is that in the latter two, the motion must go _past_ the
+		" final "word" character, so that all characters of the "word" are
+		" selected. This is mostly achieved by appending a '.' to the regexp
+		" branches. 
+		"
+		" Note: This "forward to end" motion doesn't work properly
+		" when it reaches the end of line; the final character of the
+		" moved-over word remains. This is because we have to search for
+		" '$', because searching for '^' in combination with the 'We' (jump
+		" to end of search result) does not work. 
+		let l:save_ww = &ww
+		set ww+=l
+		normal l
+		let &ww = l:save_ww
+	    endif
 	else
 	    " Forward (a:direction == '') and backward (a:direction == 'b')
 	    " motion. 
@@ -184,9 +181,6 @@ nmap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'e', v:count1 )<CR>
 omap <silent> ,w :<C-U>call <SID>CamelCaseMotion( 'w', v:count1 )<CR>
 omap <silent> ,b :<C-U>call <SID>CamelCaseMotion( 'b', v:count1 )<CR>
 omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
-"omap <silent> ,e :<C-U>let save_ve=&ve<bar>set ve=all<bar>call <SID>CamelCaseMotion( 'e', v:count1 )<bar>normal l<bar>let &ve=save_ve<CR>
-"omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'e', v:count1 )<bar>normal l<CR>
-"omap <silent> ,e :<C-U>let saww_ww=&ww<bar>set ww+=l<bar>call <SID>CamelCaseMotion( 'e', v:count1 )<bar>normal l<bar>let &ww=saww_ww<CR>
 
 
 " Visual mode motions:
