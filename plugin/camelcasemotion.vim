@@ -125,19 +125,22 @@ function! s:CamelCaseMotion( direction, count )
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
 	    if a:direction == 'E'
-		" Operator-pending and visual mode "forward to end" motion. 
-		"
+		" Note1: Special additional treatment for operator-pending and
+		" visual mode "forward to end" motion: 
 		" The difference between normal mode, operator-pending and visual
 		" mode is that in the latter two, the motion must go _past_ the
 		" final "word" character, so that all characters of the "word" are
-		" selected. This is mostly achieved by appending a '.' to the regexp
-		" branches. 
-		"
-		" Note: This "forward to end" motion doesn't work properly
-		" when it reaches the end of line; the final character of the
-		" moved-over word remains. This is because we have to search for
-		" '$', because searching for '^' in combination with the 'We' (jump
-		" to end of search result) does not work. 
+		" selected. This is done by appending a "right" ('l') motion
+		" after the search for the next "word". 
+
+		" The "right" motion only works properly at the end of the line
+		" (i.e. when the moved-over "word" is at the end of the line)
+		" when the 'l' motion is allowed to move over to the next line.
+		" Thus, the 'l' motion is added temporarily to the global
+		" 'whichwrap' setting. 
+		" Without this, the motion would leave out the last character in
+		" the line. I've also experimented with temporarily enabling the
+		" 'virtualedit' setting, but that didn't work. 
 		let l:save_ww = &ww
 		set ww+=l
 		normal l
