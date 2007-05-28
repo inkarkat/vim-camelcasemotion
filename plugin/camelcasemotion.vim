@@ -66,13 +66,13 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
-"   1.10.009	28-May-2007	BF: The operator-pending and visual mode ,e
+"   1.10.010	29-May-2007	BF: The operator-pending and visual mode ,e
 "				mapping doesn't work properly when it reaches
 "				the end of line; the final character of the
 "				moved-over "word" remains. Fixed this problem
 "				unless the "word" is at the very end of the
 "				buffer. 
-"				BF: Degenerate CamelCaseWords that consist of
+"   1.10.009	28-May-2007	BF: Degenerate CamelCaseWords that consist of
 "				only a single uppercase letter (e.g. "P" in
 "				"MapPRoblem") are skipped by all motions. Thanks
 "				to Joseph Barker for reporting this. 
@@ -123,15 +123,15 @@ if exists("loaded_camelcasemotion") || (v:version < 600)
 endif
 let loaded_camelcasemotion = 1
 
-function! s:CamelCaseMotion( direction, count )
+function! s:CamelCaseMotion( direction, count, mode )
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
-	if a:direction == 'e' || a:direction == 'E'
+	if a:direction == 'e'
 	    " "Forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
-	    if a:direction == 'E'
+	    if a:mode == 'o'
 		" Note1: Special additional treatment for operator-pending mode
 		" "forward to end" motion: 
 		" The difference between normal mode, operator-pending and visual
@@ -152,12 +152,21 @@ function! s:CamelCaseMotion( direction, count )
 		" Without this, the motion would leave out the last character in
 		" the line. I've also experimented with temporarily setting
 		" "set virtualedit=onemore" , but that didn't work. 
-		let l:save_ww = &ww
-		set ww+=l
+		let l:save_ww = &whichwrap
+		set whichwrap+=l
 		normal l
-		let &ww = l:save_ww
+		let &whichwrap = l:save_ww
+	    endif
+	    
+	    if a:mode == 'v' && &selection == 'exclusive'
+		normal l
 	    endif
 	else
+	    if a:mode == 'v' && &selection != 'exclusive'
+		normal l
+	    endif
+
+	    let l:direction = a:direction == 'w' ? '' : a:direction
 	    " Forward (a:direction == '') and backward (a:direction == 'b')
 	    " motion. 
 	    "
@@ -168,7 +177,11 @@ function! s:CamelCaseMotion( direction, count )
 	    "call search( '\<\|\u', 'W' . a:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
-	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'W' . a:direction )
+	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'W' . l:direction )
+
+	    if a:mode == 'v' && &selection != 'exclusive'
+		normal h
+	    endif
 	endif
 	let l:i = l:i + 1
     endwhile
@@ -184,18 +197,17 @@ endfunction
 " would be required to use -count and <count>. 
 
 " Normal mode motions:
-nmap <silent> ,w :<C-U>call <SID>CamelCaseMotion( 'w', v:count1 )<CR>
-nmap <silent> ,b :<C-U>call <SID>CamelCaseMotion( 'b', v:count1 )<CR>
-nmap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'e', v:count1 )<CR>
+nmap <silent> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'n')<CR>
+nmap <silent> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'n')<CR>
+nmap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'n')<CR>
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used. 
 
 
 " Operator-pending mode motions:
-omap <silent> ,w :<C-U>call <SID>CamelCaseMotion( 'w', v:count1 )<CR>
-omap <silent> ,b :<C-U>call <SID>CamelCaseMotion( 'b', v:count1 )<CR>
-omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
-" Note: Special argument 'E' for ,e motion. See Note1. 
+omap <silent> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'o')<CR>
+omap <silent> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'o')<CR>
+omap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
 
 
 " Visual mode motions:
@@ -210,9 +222,8 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
 " This allows the visual selection to be extended from either end, i.e. you can
 " first use 'bv3,w' on "CamelCaseWordExample" to select "CamelCaseWord", then
 " use ',b' to shink the selection to "CamelCase". 
-vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion( 'w', 1 )"<CR><CR>m`gvg``
-vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion( 'b', 1 )"<CR><CR>m`gvg``
-vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion( 'e', 1 )"<CR><CR>m`gvg``l
-" Note: The mapping for motion ,e appends an additional 'l' motion. See Note1. 
+vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``
+vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``
+vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
