@@ -66,13 +66,13 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
-"   1.10.010	29-May-2007	BF: The operator-pending and visual mode ,e
+"   1.10.009	28-May-2007	BF: The operator-pending and visual mode ,e
 "				mapping doesn't work properly when it reaches
 "				the end of line; the final character of the
 "				moved-over "word" remains. Fixed this problem
 "				unless the "word" is at the very end of the
 "				buffer. 
-"   1.10.009	28-May-2007	BF: Degenerate CamelCaseWords that consist of
+"				BF: Degenerate CamelCaseWords that consist of
 "				only a single uppercase letter (e.g. "P" in
 "				"MapPRoblem") are skipped by all motions. Thanks
 "				to Joseph Barker for reporting this. 
