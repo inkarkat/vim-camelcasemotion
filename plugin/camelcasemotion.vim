@@ -13,6 +13,8 @@
 "   which do not move word-wise (forward/backward), but Camel-wise; i.e. to word
 "   boundaries and uppercase letters. The motions also work on underscore
 "   notation, where words are delimited by underscore ('_') characters. 
+"   From here on, both CamelCase and underscore_notation entities are referred
+"   to as "words" (in double quotes). 
 "
 " USAGE:
 "   Use the new motions ',w', ',b' and ',e' in normal mode, operator-pending
@@ -57,6 +59,9 @@
 "     it reaches the end of the buffer; the final character of the moved-over
 "     "word" remains. As a workaround, use the default 'e' motion instead of
 "     ',e'. 
+"   - When the setting 'selection' is not set to "exclusive", a forward-backward
+"     combination (e.g. ',w,b') selects one additional character to the left,
+"     instead of only the character where the motion started. 
 "
 " TODO:
 "
@@ -72,6 +77,12 @@
 "				moved-over "word" remains. Fixed this problem
 "				unless the "word" is at the very end of the
 "				buffer. 
+"				ENH: The visual mode motions now also (mostly)
+"				work with the (default) setting
+"				'set selection=inclusive', instead of selecting
+"				one character too much. 
+"				Refactored the arguments of function 
+"				<SID>CamelCaseMotion(...). 
 "   1.10.009	28-May-2007	BF: Degenerate CamelCaseWords that consist of
 "				only a single uppercase letter (e.g. "P" in
 "				"MapPRoblem") are skipped by all motions. Thanks
@@ -132,18 +143,14 @@ function! s:CamelCaseMotion( direction, count, mode )
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
 	    if a:mode == 'o'
-		" Note1: Special additional treatment for operator-pending mode
-		" "forward to end" motion: 
+		" Note: Special additional treatment for operator-pending mode
+		" "forward to end" motion. 
 		" The difference between normal mode, operator-pending and visual
 		" mode is that in the latter two, the motion must go _past_ the
 		" final "word" character, so that all characters of the "word" are
 		" selected. This is done by appending a 'l' motion after the
 		" search for the next "word". 
 		"
-		" In visual mode, the 'l' motion works fine at the end of
-		" the line, and selects the last character of the line. Thus,
-		" the 'l' motion is appended directly to the mapping. 
-
 		" In operator-pending mode, the 'l' motion only works properly
 		" at the end of the line (i.e. when the moved-over "word" is at
 		" the end of the line) when the 'l' motion is allowed to move
@@ -157,19 +164,12 @@ function! s:CamelCaseMotion( direction, count, mode )
 		normal l
 		let &whichwrap = l:save_ww
 	    endif
-	    
-	    if a:mode == 'v' && &selection == 'exclusive'
-		normal l
-	    endif
 	else
-	    if a:mode == 'v' && &selection != 'exclusive'
-		normal l
-	    endif
-
-	    let l:direction = a:direction == 'w' ? '' : a:direction
 	    " Forward (a:direction == '') and backward (a:direction == 'b')
 	    " motion. 
-	    "
+
+	    let l:direction = (a:direction == 'w' ? '' : a:direction)
+
 	    " CamelCase: Jump to beginning of either (start of word, Word, WORD,
 	    " 123). 
 	    " Underscore notation: Jump to the beginning of an underscore-separated
@@ -178,10 +178,6 @@ function! s:CamelCaseMotion( direction, count, mode )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
 	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'W' . l:direction )
-
-	    if a:mode == 'v' && &selection != 'exclusive'
-		normal h
-	    endif
 	endif
 	let l:i = l:i + 1
     endwhile
@@ -211,6 +207,8 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
 
 
 " Visual mode motions:
+"
+" Note: Complex mapping. 
 " The expression is used to translate the optional [count] into multiple
 " invocations of the <SID>CamelCaseMotion(..., 1) function. 
 " The octal string constant \33 corresponds to <Esc>, and is used to exit the
@@ -222,8 +220,25 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
 " This allows the visual selection to be extended from either end, i.e. you can
 " first use 'bv3,w' on "CamelCaseWordExample" to select "CamelCaseWord", then
 " use ',b' to shink the selection to "CamelCase". 
-vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``
-vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``
-vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``
+"
+" Note: 'selection' setting. 
+if &selection == 'exclusive'
+    " When set to 'exclusive', the "forward to end" motion (',e') does not
+    " include the last character of the moved-over "word". To include that, an
+    " additional 'l' motion is appended; similar to the special treatment in
+    " operator-pending mode. 
+    vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``
+    vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``
+    vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``l
+else
+    " The forward and backward motions move to the beginning of the next "word".
+    " When 'selection' is set to 'inclusive' or 'old', this is one character too far. 
+    " The appended 'h' motion undoes this. Because of backward step, though, the
+    " forward motion finds the current "word" again, and would be stuck on the
+    " current "word". A prepended 'l' fixes that. 
+    vmap <silent> ,w @="\33l:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``h
+    vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``h
+    vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``
+endif
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
