@@ -38,8 +38,8 @@
 "   ~/.vim/plugin). 
 "
 " DEPENDENCIES:
-"   - Requires VIM 6.0 or higher for limited functionality (,e motions do not
-"     work correctly and move like ,w).  
+"   - Requires VIM 6.0 or higher for limited functionality
+"     (,e motions do not work correctly and move like ,w).  
 "   - Requires VIM 7.0 or higher for full functionality. 
 "
 " CONFIGURATION:
@@ -54,8 +54,9 @@
 "     and select "P1" in one step. As a workaround, use ',w' instead of ',e';
 "     those two mappings have the same effect on CamelCaseWords, anyway. 
 "   - The operator-pending and visual mode ,e mapping doesn't work properly when
-"     it reaches the end of line; the final character of the moved-over "word"
-"     remains. As a workaround, use the default 'e' motion instead of ',e'. 
+"     it reaches the end of the buffer; the final character of the moved-over
+"     "word" remains. As a workaround, use the default 'e' motion instead of
+"     ',e'. 
 "
 " TODO:
 "
@@ -65,6 +66,12 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.10.010	29-May-2007	BF: The operator-pending and visual mode ,e
+"				mapping doesn't work properly when it reaches
+"				the end of line; the final character of the
+"				moved-over "word" remains. Fixed this problem
+"				unless the "word" is at the very end of the
+"				buffer. 
 "   1.10.009	28-May-2007	BF: Degenerate CamelCaseWords that consist of
 "				only a single uppercase letter (e.g. "P" in
 "				"MapPRoblem") are skipped by all motions. Thanks
@@ -125,22 +132,26 @@ function! s:CamelCaseMotion( direction, count )
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
 	    if a:direction == 'E'
-		" Note1: Special additional treatment for operator-pending and
-		" visual mode "forward to end" motion: 
+		" Note1: Special additional treatment for operator-pending mode
+		" "forward to end" motion: 
 		" The difference between normal mode, operator-pending and visual
 		" mode is that in the latter two, the motion must go _past_ the
 		" final "word" character, so that all characters of the "word" are
-		" selected. This is done by appending a "right" ('l') motion
-		" after the search for the next "word". 
+		" selected. This is done by appending a 'l' motion after the
+		" search for the next "word". 
+		"
+		" In visual mode, the 'l' motion works fine at the end of
+		" the line, and selects the last character of the line. Thus,
+		" the 'l' motion is appended directly to the mapping. 
 
-		" The "right" motion only works properly at the end of the line
-		" (i.e. when the moved-over "word" is at the end of the line)
-		" when the 'l' motion is allowed to move over to the next line.
-		" Thus, the 'l' motion is added temporarily to the global
-		" 'whichwrap' setting. 
+		" In operator-pending mode, the 'l' motion only works properly
+		" at the end of the line (i.e. when the moved-over "word" is at
+		" the end of the line) when the 'l' motion is allowed to move
+		" over to the next line. Thus, the 'l' motion is added
+		" temporarily to the global 'whichwrap' setting. 
 		" Without this, the motion would leave out the last character in
-		" the line. I've also experimented with temporarily enabling the
-		" 'virtualedit' setting, but that didn't work. 
+		" the line. I've also experimented with temporarily setting
+		" "set virtualedit=onemore" , but that didn't work. 
 		let l:save_ww = &ww
 		set ww+=l
 		normal l
@@ -184,6 +195,7 @@ nmap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'e', v:count1 )<CR>
 omap <silent> ,w :<C-U>call <SID>CamelCaseMotion( 'w', v:count1 )<CR>
 omap <silent> ,b :<C-U>call <SID>CamelCaseMotion( 'b', v:count1 )<CR>
 omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
+" Note: Special argument 'E' for ,e motion. See Note1. 
 
 
 " Visual mode motions:
@@ -201,5 +213,6 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion( 'E', v:count1 )<CR>
 vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion( 'w', 1 )"<CR><CR>m`gvg``
 vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion( 'b', 1 )"<CR><CR>m`gvg``
 vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion( 'e', 1 )"<CR><CR>m`gvg``l
+" Note: The mapping for motion ,e appends an additional 'l' motion. See Note1. 
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
