@@ -54,14 +54,15 @@
 "   - A degenerate CamelCaseWord containing '\U\u\d' (e.g. "MaP1Roblem")
 "     confuses the operator-pending and visual mode ,e mapping. It'll skip "P"
 "     and select "P1" in one step. As a workaround, use ',w' instead of ',e';
-"     those two mappings have the same effect on CamelCaseWords, anyway. 
+"     those two mappings have the same effect inside CamelCaseWords, anyway. 
 "   - The operator-pending and visual mode ,e mapping doesn't work properly when
 "     it reaches the end of the buffer; the final character of the moved-over
 "     "word" remains. As a workaround, use the default 'e' motion instead of
 "     ',e'. 
-"   - When the setting 'selection' is not set to "exclusive", a forward-backward
-"     combination (e.g. ',w,b') selects one additional character to the left,
-"     instead of only the character where the motion started. 
+"   - When the VIM setting 'selection' is not set to "exclusive", a
+"     forward-backward combination (e.g. ',w,b') selects one additional
+"     character to the left, instead of only the character where the motion
+"     started. 
 "
 " TODO:
 "
@@ -71,7 +72,7 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
-"   1.10.010	29-May-2007	BF: The operator-pending and visual mode ,e
+"   1.20.010	29-May-2007	BF: The operator-pending and visual mode ,e
 "				mapping doesn't work properly when it reaches
 "				the end of line; the final character of the
 "				moved-over "word" remains. Fixed this problem
@@ -81,8 +82,16 @@
 "				work with the (default) setting
 "				'set selection=inclusive', instead of selecting
 "				one character too much. 
+"				ENH: All mappings will check for changes to the
+"				'selection' setting and remap the visual mode
+"				mappings via function
+"				s:SetupVisualModeMappings(). We cannot rely on
+"				the setting while sourcing camelcasemotion.vim
+"				because the mswin.vim script may be sourced
+"				afterwards, and its 'behave mswin' changes
+"				'selection'. 
 "				Refactored the arguments of function 
-"				<SID>CamelCaseMotion(...). 
+"				s:CamelCaseMotion(...). 
 "   1.10.009	28-May-2007	BF: Degenerate CamelCaseWords that consist of
 "				only a single uppercase letter (e.g. "P" in
 "				"MapPRoblem") are skipped by all motions. Thanks
@@ -134,6 +143,14 @@ if exists("loaded_camelcasemotion") || (v:version < 600)
 endif
 let loaded_camelcasemotion = 1
 
+"- functions ------------------------------------------------------------------"
+function! s:CheckForChangesToTheSelectionSetting()
+    if s:selectionSetting != &selection
+	let s:selectionSetting = &selection
+	call s:SetupVisualModeMappings()
+    endif
+endfunction
+
 function! s:CamelCaseMotion( direction, count, mode )
     "echo "count is " . a:count
     let l:i = 0
@@ -172,18 +189,20 @@ function! s:CamelCaseMotion( direction, count, mode )
 
 	    " CamelCase: Jump to beginning of either (start of word, Word, WORD,
 	    " 123). 
-	    " Underscore notation: Jump to the beginning of an underscore-separated
+	    " Underscore_notation: Jump to the beginning of an underscore-separated
 	    " word or number. 
-	    "call search( '\<\|\u', 'W' . a:direction )
-	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . a:direction )
-	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . a:direction )
+	    "call search( '\<\|\u', 'W' . l:direction )
+	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
+	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
 	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'W' . l:direction )
 	endif
 	let l:i = l:i + 1
     endwhile
+
+    call s:CheckForChangesToTheSelectionSetting()
 endfunction
 
-"------------------------------------------------------------------------------
+"- mappings -------------------------------------------------------------------
 " The count is passed into the function through the special variable 'v:count1',
 " which is easier than misusing the :[range] that :call supports. 
 " <C-U> is used to delete the unused range. 
@@ -207,38 +226,43 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
 
 
 " Visual mode motions:
-"
-" Note: Complex mapping. 
-" The expression is used to translate the optional [count] into multiple
-" invocations of the <SID>CamelCaseMotion(..., 1) function. 
-" The octal string constant \33 corresponds to <Esc>, and is used to exit the
-" expression; ':' then enters command mode, and the second octal string constant
-" \25 corresponds to <C-U>, which is used to clear the unused visual range
-" (:`<,`>). 
-" Finally, the current cursor position is stored in the ` mark, the visual
-" selection is restored ('gv'), and the cursor position is restored ('g``').
-" This allows the visual selection to be extended from either end, i.e. you can
-" first use 'bv3,w' on "CamelCaseWordExample" to select "CamelCaseWord", then
-" use ',b' to shink the selection to "CamelCase". 
-"
-" Note: 'selection' setting. 
-if &selection == 'exclusive'
-    " When set to 'exclusive', the "forward to end" motion (',e') does not
-    " include the last character of the moved-over "word". To include that, an
-    " additional 'l' motion is appended; similar to the special treatment in
-    " operator-pending mode. 
-    vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``
-    vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``
-    vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``l
-else
-    " The forward and backward motions move to the beginning of the next "word".
-    " When 'selection' is set to 'inclusive' or 'old', this is one character too far. 
-    " The appended 'h' motion undoes this. Because of backward step, though, the
-    " forward motion finds the current "word" again, and would be stuck on the
-    " current "word". A prepended 'l' fixes that. 
-    vmap <silent> ,w @="\33l:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``h
-    vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``h
-    vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``
-endif
+function! s:SetupVisualModeMappings()
+    " Note: Complex mapping. 
+    " The expression is used to translate the optional [count] into multiple
+    " invocations of the <SID>CamelCaseMotion(..., 1) function. 
+    " The octal string constant \33 corresponds to <Esc>, and is used to exit the
+    " expression; ':' then enters command mode, and the second octal string constant
+    " \25 corresponds to <C-U>, which is used to clear the unused visual range
+    " (:`<,`>). 
+    " Finally, the current cursor position is stored in the ` mark, the visual
+    " selection is restored ('gv'), and the cursor position is restored ('g``').
+    " This allows the visual selection to be extended from either end, i.e. you can
+    " first use 'bv3,w' on "CamelCaseWordExample" to select "CamelCaseWord", then
+    " use ',b' to shink the selection to "CamelCase". 
+    "
+    " Note: 'selection' setting. 
+    if &selection == 'exclusive'
+	" When set to 'exclusive', the "forward to end" motion (',e') does not
+	" include the last character of the moved-over "word". To include that, an
+	" additional 'l' motion is appended; similar to the special treatment in
+	" operator-pending mode. 
+	vmap <silent> ,w @="\33:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``
+	vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``
+	vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``l
+    else
+	" The forward and backward motions move to the beginning of the next "word".
+	" When 'selection' is set to 'inclusive' or 'old', this is one character too far. 
+	" The appended 'h' motion undoes this. Because of this backward step,
+	" though, the forward motion finds the current "word" again, and would
+	" be stuck on the current "word". A prepended 'l' fixes that. 
+	vmap <silent> ,w @="\33l:\25call <SID>CamelCaseMotion('w',1,'v')"<CR><CR>m`gvg``h
+	vmap <silent> ,b @="\33:\25call <SID>CamelCaseMotion('b',1,'v')"<CR><CR>m`gvg``h
+	vmap <silent> ,e @="\33:\25call <SID>CamelCaseMotion('e',1,'v')"<CR><CR>m`gvg``
+    endif
+endfunction
+
+let s:selectionSetting = ''
+call s:SetupVisualModeMappings()
+
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
