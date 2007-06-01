@@ -52,17 +52,19 @@
 "
 " KNOWN PROBLEMS:
 "   - A degenerate CamelCaseWord containing '\U\u\d' (e.g. "MaP1Roblem")
-"     confuses the operator-pending and visual mode ,e mapping. It'll skip "P"
-"     and select "P1" in one step. As a workaround, use ',w' instead of ',e';
-"     those two mappings have the same effect inside CamelCaseWords, anyway. 
+"     confuses the operator-pending and visual mode ,e mapping if 'selection' is
+"     not set to "exclusive". It'll skip "P" and select "P1" in one step. As a
+"     workaround, use ',w' instead of ',e'; those two mappings have the same
+"     effect inside CamelCaseWords, anyway. 
 "   - The operator-pending and visual mode ,e mapping doesn't work properly when
 "     it reaches the end of the buffer; the final character of the moved-over
 "     "word" remains. As a workaround, use the default 'e' motion instead of
 "     ',e'. 
 "   - When the VIM setting 'selection' is not set to "exclusive", a
-"     forward-backward combination (e.g. ',w,b') selects one additional
-"     character to the left, instead of only the character where the motion
-"     started. 
+"     forward-backward combination in visual mode (e.g. 'v,w,b') selects one
+"     additional character to the left, instead of only the character where the
+"     motion started. Likewise, extension of the visual selection from the front
+"     end is off by one additional character. 
 "
 " TODO:
 "
