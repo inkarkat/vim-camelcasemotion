@@ -166,9 +166,9 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 	if a:direction == 'e'
 	    " "Forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
-	    " end of word | end of underscore_notation | end of CamelCase | end
-	    " of ACRONYM followed by CamelCase or number | end of number
-	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
+	    " end of ...
+	    " number | ACRONYM followed by CamelCase or number | CamelCase | underscore_notation | word
+	    call search( '\d\+\|\u\+\ze\(\u\l\|\d\)\|\u\l\+\|\(\a\|\d\)\+\ze_\|\>', 'We' )
 	    if a:mode == 'o'
 		" Note: Special additional treatment for operator-pending mode
 		" "forward to end" motion. 
@@ -204,6 +204,8 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 	    "call search( '\<\|\u', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
+	    " beginning of ...
+	    " word, optionally followed by an ACRONYM followed by CamelCase | underscore_notation | CamelCase | ACRONYM followed by CamelCase or number | number
 	    call search( '\<\(\u\+\ze\u\)\?\|_\zs\(\a\|\d\)\+\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'W' . l:direction )
 	endif
 	let l:i = l:i + 1
