@@ -1,7 +1,7 @@
 " camelcasemotion.vim: Mappings for motion through CamelCaseWords and
 " underscore_notation. 
 "
-" DESCRIPTION:
+" DESCRIPTION: {{{1
 "   VIM provides many built-in motions, e.g. to move to the next word, or
 "   end of the current word. Most programming languages use either CamelCase
 "   ("anIdentifier") or underscore_notation ("an_identifier") naming
@@ -35,7 +35,7 @@
 "   ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
 "	extensio[n], 1[1], dpn[0]
 "
-" INSTALLATION:
+" INSTALLATION: {{{1
 "   Put the script into your user or system VIM plugin directory (e.g.
 "   ~/.vim/plugin). 
 "
@@ -73,7 +73,7 @@
 "
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
-" REVISION	DATE		REMARKS 
+" REVISION	DATE		REMARKS {{{1
 "   1.20.011	02-Jun-2007	Thanks again to Joseph Barker for discussing the
 "				complicated visual mode mapping on the vim-dev
 "				mailing list and coming up with a great
@@ -156,9 +156,10 @@ if exists("loaded_camelcasemotion") || (v:version < 600)
     finish
 endif
 let loaded_camelcasemotion = 1
+" }}}1
 
 "- functions ------------------------------------------------------------------"
-function! s:CamelCaseMotion( direction, count, mode )
+function! s:CamelCaseMotion( direction, count, mode ) " {{{1
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
@@ -206,6 +207,7 @@ function! s:CamelCaseMotion( direction, count, mode )
 	let l:i = l:i + 1
     endwhile
 endfunction
+" }}}1
 
 "- mappings -------------------------------------------------------------------
 " The count is passed into the function through the special variable 'v:count1',
@@ -231,7 +233,7 @@ omap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
 
 
 " Visual mode motions:
-function! s:VisualCamelCaseMotion( direction, count, mode )
+function! s:VisualCamelCaseMotion( direction, count, mode ) " {{{1
     " Reselecting the current selection allows to call search() and issue normal
     " mode motions while staying in visual mode. 
     normal! gv
@@ -261,9 +263,10 @@ function! s:VisualCamelCaseMotion( direction, count, mode )
 	normal! h
     end
 endfunction
+" }}}1
 
 vmap <silent> ,w :<C-U>call <SID>VisualCamelCaseMotion('w',v:count1,'v')<CR>
 vmap <silent> ,b :<C-U>call <SID>VisualCamelCaseMotion('b',v:count1,'v')<CR>
 vmap <silent> ,e :<C-U>call <SID>VisualCamelCaseMotion('e',v:count1,'v')<CR>
 
-" vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
+" vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
