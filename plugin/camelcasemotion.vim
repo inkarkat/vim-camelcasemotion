@@ -166,6 +166,8 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 	if a:direction == 'e'
 	    " "Forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
+	    " end of word | end of underscore_notation | end of CamelCase | end
+	    " of ACRONYM followed by CamelCase or number | end of number
 	    call search( '\>\|\(\a\|\d\)\+\ze_\|\u\l\+\|\u\+\ze\(\u\l\|\d\)\|\d\+', 'We' )
 	    if a:mode == 'o'
 		" Note: Special additional treatment for operator-pending mode
