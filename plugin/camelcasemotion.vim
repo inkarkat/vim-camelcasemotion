@@ -74,6 +74,7 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS {{{1
+"   1.20.013	09-Apr-2008	Refactored away s:VisualCamelCaseMotion(). 
 "   1.20.012	02-Jun-2007	BF: Corrected motions through mixed
 "				CamelCase_and_UnderScore words by re-ordering
 "				and narrowing the search patterns.  
@@ -162,7 +163,7 @@ let loaded_camelcasemotion = 1
 " }}}1
 
 "- functions ------------------------------------------------------------------"
-function! s:CamelCaseMotion( direction, count, mode ) " {{{1
+function! s:CamelCaseMove( direction, count, mode ) " {{{1
     "echo "count is " . a:count
     let l:i = 0
     while l:i < a:count
@@ -216,6 +217,46 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 endfunction
 " }}}1
 
+function! s:CamelCaseMotion( direction, count, mode ) " {{{1
+    " Visual mode needs special preparations and postprocessing; 
+    " normal and operator-pending mode breeze through to s:CamelCaseMove(). 
+
+    if a:mode == 'v'
+	" Visual mode was left when calling this function. Reselecting the current
+	" selection returns to visual mode and allows to call search() and issue
+	" normal mode motions while staying in visual mode. 
+	normal! gv
+
+	" Note_1a:
+	if &selection != 'exclusive' && a:direction == 'w'
+	    normal! l
+	endif
+    endif
+
+    call s:CamelCaseMove( a:direction, a:count, a:mode )
+
+    if a:mode == 'v'
+	" Note: 'selection' setting. 
+	if &selection == 'exclusive' && a:direction == 'e'
+	    " When set to 'exclusive', the "forward to end" motion (',e') does not
+	    " include the last character of the moved-over "word". To include that, an
+	    " additional 'l' motion is appended to the motion; similar to the
+	    " special treatment in operator-pending mode. 
+	    normal! l
+	elseif &selection != 'exclusive' && a:direction != 'e'
+	    " Note_1b:
+	    " The forward and backward motions move to the beginning of the next "word".
+	    " When 'selection' is set to 'inclusive' or 'old', this is one character too far. 
+	    " The appended 'h' motion undoes this. Because of this backward step,
+	    " though, the forward motion finds the current "word" again, and would
+	    " be stuck on the current "word". An 'l' motion before the CamelCase
+	    " motion (see Note_1a) fixes that. 
+	    normal! h
+	end
+    endif
+endfunction
+" }}}1
+
 "- mappings -------------------------------------------------------------------
 " The count is passed into the function through the special variable 'v:count1',
 " which is easier than misusing the :[range] that :call supports. 
@@ -226,55 +267,22 @@ endfunction
 " would be required to use -count and <count>. 
 
 " Normal mode motions:
-nmap <silent> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'n')<CR>
-nmap <silent> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'n')<CR>
-nmap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'n')<CR>
+nnoremap <script> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'n')<CR>
+nnoremap <script> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'n')<CR>
+nnoremap <script> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'n')<CR>
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used. 
 
 
 " Operator-pending mode motions:
-omap <silent> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'o')<CR>
-omap <silent> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'o')<CR>
-omap <silent> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
+onoremap <script> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'o')<CR>
+onoremap <script> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'o')<CR>
+onoremap <script> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
 
 
 " Visual mode motions:
-function! s:VisualCamelCaseMotion( direction, count, mode ) " {{{1
-    " Visual mode was left when calling this function. Reselecting the current
-    " selection returns to visual mode and allows to call search() and issue
-    " normal mode motions while staying in visual mode. 
-    normal! gv
-
-    " Note_1a:
-    if &selection != 'exclusive' && a:direction == 'w'
-	normal! l
-    endif
-
-    call s:CamelCaseMotion( a:direction, a:count, a:mode )
-
-    " Note: 'selection' setting. 
-    if &selection == 'exclusive' && a:direction == 'e'
-	" When set to 'exclusive', the "forward to end" motion (',e') does not
-	" include the last character of the moved-over "word". To include that, an
-	" additional 'l' motion is appended to the motion; similar to the
-	" special treatment in operator-pending mode. 
-	normal! l
-    elseif &selection != 'exclusive' && a:direction != 'e'
-	" Note_1b:
-	" The forward and backward motions move to the beginning of the next "word".
-	" When 'selection' is set to 'inclusive' or 'old', this is one character too far. 
-	" The appended 'h' motion undoes this. Because of this backward step,
-	" though, the forward motion finds the current "word" again, and would
-	" be stuck on the current "word". An 'l' motion before the CamelCase
-	" motion (see Note_1a) fixes that. 
-	normal! h
-    end
-endfunction
-" }}}1
-
-vmap <silent> ,w :<C-U>call <SID>VisualCamelCaseMotion('w',v:count1,'v')<CR>
-vmap <silent> ,b :<C-U>call <SID>VisualCamelCaseMotion('b',v:count1,'v')<CR>
-vmap <silent> ,e :<C-U>call <SID>VisualCamelCaseMotion('e',v:count1,'v')<CR>
+vnoremap <script> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'v')<CR>
+vnoremap <script> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'v')<CR>
+vnoremap <script> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'v')<CR>
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
