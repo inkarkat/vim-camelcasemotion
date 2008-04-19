@@ -40,11 +40,18 @@
 "   ~/.vim/plugin). 
 "
 " DEPENDENCIES:
-"   - Requires VIM 6.0 or higher for limited functionality
-"     (,e motions do not work correctly and move like ,w).  
-"   - Requires VIM 7.0 or higher for full functionality. 
+"   - Requires VIM 7.0 or higher. 
 "
 " CONFIGURATION:
+"   If you want to use different mappings, map your keys to the
+"   <Plug>CamelCaseMotion_? mapping targets _before_ sourcing this script
+"   (e.g. in your .vimrc).  
+"
+"   Example: Replace the default 'w', 'b' and 'e' mappings instead of defining
+"   additional mappings ',w', ',b' and ',e':
+"       map <silent> w <Plug>CamelCaseMotion_w
+"       map <silent> b <Plug>CamelCaseMotion_b
+"       map <silent> e <Plug>CamelCaseMotion_e
 "
 " LIMITATIONS:
 "
@@ -68,13 +75,20 @@
 "
 " TODO:
 "
-" Copyright: (C) 2007 by Ingo Karkat
+" Copyright: (C) 2007-2008 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS {{{1
-"   1.20.013	09-Apr-2008	Refactored away s:VisualCamelCaseMotion(). 
+"   1.30.013	09-Apr-2008	Refactored away s:VisualCamelCaseMotion(). 
+"				Allowing users to use mappings different than
+"				,w ,b ,e by defining <Plug>CamelCaseMotion_?
+"				target mappings. This can even be used to
+"				replace the default 'w', 'b' and 'e' mappings,
+"				as suggested by Mun Johl. 
+"				Mappings are now created in a generic function. 
+"				Now requires VIM 7.0 or higher. 
 "   1.20.012	02-Jun-2007	BF: Corrected motions through mixed
 "				CamelCase_and_UnderScore words by re-ordering
 "				and narrowing the search patterns.  
@@ -156,7 +170,7 @@
 "	0.01	11-Oct-2005	file creation
 
 " Avoid installing twice or when in compatible mode
-if exists("loaded_camelcasemotion") || (v:version < 600)
+if exists("loaded_camelcasemotion") || (v:version < 700)
     finish
 endif
 let loaded_camelcasemotion = 1
@@ -265,24 +279,30 @@ endfunction
 " work with the normal mode mapping: When a count is typed before the mapping,
 " the ':' will convert a count of 3 into ':.,+2MyCommand', but ':3MyCommand'
 " would be required to use -count and <count>. 
-
-" Normal mode motions:
-nnoremap <script> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'n')<CR>
-nnoremap <script> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'n')<CR>
-nnoremap <script> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'n')<CR>
+"
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used. 
 
+function! s:CreateMappings() "{{{1
+    " Create mappings according to this template:
+    " (* stands for the mode [nov], ? for the underlying motion [wbe].) 
+    "
+    " *noremap <script> <Plug>CamelCaseMotion_? :<C-U>call <SID>CamelCaseMotion('?',v:count1,'*')<CR>
+    " if ! hasmapto('<Plug>CamelCaseMotion_?', '*')
+    "	  *map <silent> ,? <Plug>CamelCaseMotion_?
+    " endif
 
-" Operator-pending mode motions:
-onoremap <script> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'o')<CR>
-onoremap <script> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'o')<CR>
-onoremap <script> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'o')<CR>
-
-
-" Visual mode motions:
-vnoremap <script> ,w :<C-U>call <SID>CamelCaseMotion('w',v:count1,'v')<CR>
-vnoremap <script> ,b :<C-U>call <SID>CamelCaseMotion('b',v:count1,'v')<CR>
-vnoremap <script> ,e :<C-U>call <SID>CamelCaseMotion('e',v:count1,'v')<CR>
+    for l:mode in ['n', 'o', 'v']
+	for l:motion in ['w', 'b', 'e']
+	    let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
+	    execute l:mode . 'noremap <script> ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseMotion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
+	    if ! hasmapto(l:targetMapping, l:mode)
+		execute l:mode . 'map <silent> ,' . l:motion . ' ' . l:targetMapping 
+	    endif
+	endfor
+    endfor
+endfunction
+" }}}1
+call s:CreateMappings()
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
