@@ -201,7 +201,7 @@ function! s:CamelCaseMove( direction, count, mode ) " {{{1
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    " end of ...
 	    " number | ACRONYM followed by CamelCase or number | CamelCase | underscore_notation | non-keyword | word
-	    call search( '\d\+\|\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\k\+\>', 'We' )
+	    call search( '\d\+\|\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(_\@!\k\)\+\>', 'We' )
 	    " Note: word must be defined as '\k\>'; '\>' on its own somehow
 	    " dominates over the previous branch. 
 	    if a:mode == 'o'
