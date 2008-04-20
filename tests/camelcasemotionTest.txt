@@ -8,3 +8,4 @@
 " The well-known MapPPPP123Roblem or MaP1Roblem is there. 
 " CamelCaseWordAtTheEndOfLine
 " underscore_word_at_the_END_OF_LINE
+" CamelCase_Word Script_31337Path_AndName_AND_WithoutExtension11_FOO_FooBar foo
