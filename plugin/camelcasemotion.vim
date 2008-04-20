@@ -240,8 +240,8 @@ function! s:CamelCaseMove( direction, count, mode ) " {{{1
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
 	    " beginning of ...
-	    " word | non-keyword after whitespaces | non-whitespace after word | number | ACRONYM followed by CamelCase or number | CamelCase | underscore followed by ACRONYM, Camel, lowercase or number
-	    call search( '\<\|\s\+\zs\k\@!\S\|\>\S\|\d\+\|\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|_\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction )
+	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | ACRONYM followed by CamelCase or number | CamelCase | underscore followed by ACRONYM, Camel, lowercase or number
+	    call search( '\<\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\|\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|_\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction )
 	endif
 	let l:i = l:i + 1
     endwhile
