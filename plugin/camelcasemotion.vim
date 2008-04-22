@@ -259,6 +259,8 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 	" selection returns to visual mode and allows to call search() and issue
 	" normal mode motions while staying in visual mode. 
 	normal! gv
+    endif
+    if a:mode == 'v' || a:mode == 'iv'
 
 	" Note_1a:
 	if &selection != 'exclusive' && a:direction == 'w'
@@ -268,7 +270,7 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 
     call s:CamelCaseMove( a:direction, a:count, a:mode )
 
-    if a:mode == 'v'
+    if a:mode == 'v' || a:mode == 'iv'
 	" Note: 'selection' setting. 
 	if &selection == 'exclusive' && a:direction == 'e'
 	    " When set to 'exclusive', the "forward to end" motion (',e') does not
@@ -323,5 +325,35 @@ function! s:CreateMappings() "{{{1
 endfunction
 " }}}1
 call s:CreateMappings()
+
+function! CamelCaseInnerMotion( direction, count )
+    " If the cursor is positioned on the first character of a CamelWord, the
+    " backward motion would move to the previous word, which would result in a
+    " wrong selection. To fix this, first move the cursor to the right, so that
+    " the backward motion definitely will cover the current "word" under the
+    " cursor. 
+    normal! l
+    
+    " Move "word" backwards, enter visual mode, then move "word" forward. This
+    " selects the inner "word" in visual mode; the operator-pending mode takes
+    " this selection as the area covered by the motion. 
+    if a:direction == 'b'
+	" Do not do the selection backwards, because the backwards "word" motion
+	" in visual mode + selection=inclusive has an off-by-one error. 
+	call s:CamelCaseMotion( 'b', a:count, 'n' )
+	normal v
+	" We decree that 'b' is the opposite of 'e', not 'w'. This makes more
+	" sense at the end of a line and for underscore_notation. 
+	call s:CamelCaseMotion( 'e', a:count, 'iv' )
+    else
+	call s:CamelCaseMotion( 'b', 1, 'n' )
+	normal v
+	call s:CamelCaseMotion( a:direction, a:count, 'iv' )
+    endif
+endfunction
+
+onoremap <script> i,w :call CamelCaseInnerMotion('w', v:count1)<CR>
+onoremap <script> i,b :call CamelCaseInnerMotion('b', v:count1)<CR>
+onoremap <script> i,e :call CamelCaseInnerMotion('e', v:count1)<CR>
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
