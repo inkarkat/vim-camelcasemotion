@@ -15,6 +15,8 @@
 "   notation, where words are delimited by underscore ('_') characters. 
 "   From here on, both CamelCase and underscore_notation entities are referred
 "   to as "words" (in double quotes). 
+"   Outside of "words" (e.g. in non-keyword characters like // or ;), the new
+"   motions move just like the regular motions. 
 "
 " USAGE:
 "   Use the new motions ',w', ',b' and ',e' in normal mode, operator-pending
