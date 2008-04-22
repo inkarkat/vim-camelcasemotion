@@ -251,6 +251,21 @@ endfunction
 " }}}1
 
 function! s:CamelCaseMotion( direction, count, mode ) " {{{1
+"*******************************************************************************
+"* PURPOSE:
+"   Perform the motion over CamelCaseWords or underscore_notation. 
+"* ASSUMPTIONS / PRECONDITIONS:
+"   none
+"* EFFECTS / POSTCONDITIONS:
+"   Move cursor / change selection. 
+"* INPUTS:
+"   a:direction	one of 'w', 'b', 'e'
+"   a:count	number of "words" to move over
+"   a:mode	one of 'n', 'o', 'v', 'iv' (latter one is a special visual mode
+"		when inside the inner "word" text objects. 
+"* RETURN VALUES: 
+"   none
+"*******************************************************************************
     " Visual mode needs special preparations and postprocessing; 
     " normal and operator-pending mode breeze through to s:CamelCaseMove(). 
 
@@ -355,5 +370,13 @@ endfunction
 onoremap <script> i,w :call CamelCaseInnerMotion('w', v:count1)<CR>
 onoremap <script> i,b :call CamelCaseInnerMotion('b', v:count1)<CR>
 onoremap <script> i,e :call CamelCaseInnerMotion('e', v:count1)<CR>
+
+" VIM's built-in inner text objects also work in visual mode; they have
+" different behavior depending on whether visual mode has just been entered or
+" whether text has already been selected. 
+" We deviate from that and always override the existing selection. 
+vnoremap <script> i,w :<C-U>call CamelCaseInnerMotion('w', v:count1)<CR>
+vnoremap <script> i,b :<C-U>call CamelCaseInnerMotion('b', v:count1)<CR>
+vnoremap <script> i,e :<C-U>call CamelCaseInnerMotion('e', v:count1)<CR>
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
