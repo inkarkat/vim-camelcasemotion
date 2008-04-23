@@ -307,41 +307,7 @@ function! s:CamelCaseMotion( direction, count, mode ) " {{{1
 endfunction
 " }}}1
 
-"- mappings -------------------------------------------------------------------
-" The count is passed into the function through the special variable 'v:count1',
-" which is easier than misusing the :[range] that :call supports. 
-" <C-U> is used to delete the unused range. 
-" Another option would be to use a custom 'command! -count=1', but that doesn't
-" work with the normal mode mapping: When a count is typed before the mapping,
-" the ':' will convert a count of 3 into ':.,+2MyCommand', but ':3MyCommand'
-" would be required to use -count and <count>. 
-"
-" We do not provide the fourth "backward to end" motion (,E), because it is
-" seldomly used. 
-
-function! s:CreateMappings() "{{{1
-    " Create mappings according to this template:
-    " (* stands for the mode [nov], ? for the underlying motion [wbe].) 
-    "
-    " *noremap <script> <Plug>CamelCaseMotion_? :<C-U>call <SID>CamelCaseMotion('?',v:count1,'*')<CR>
-    " if ! hasmapto('<Plug>CamelCaseMotion_?', '*')
-    "	  *map <silent> ,? <Plug>CamelCaseMotion_?
-    " endif
-
-    for l:mode in ['n', 'o', 'v']
-	for l:motion in ['w', 'b', 'e']
-	    let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
-	    execute l:mode . 'noremap <script> ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseMotion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
-	    if ! hasmapto(l:targetMapping, l:mode)
-		execute l:mode . 'map <silent> ,' . l:motion . ' ' . l:targetMapping 
-	    endif
-	endfor
-    endfor
-endfunction
-" }}}1
-call s:CreateMappings()
-
-function! CamelCaseInnerMotion( direction, count )
+function! s:CamelCaseInnerMotion( direction, count ) " {{{1
     " If the cursor is positioned on the first character of a CamelWord, the
     " backward motion would move to the previous word, which would result in a
     " wrong selection. To fix this, first move the cursor to the right, so that
@@ -366,17 +332,54 @@ function! CamelCaseInnerMotion( direction, count )
 	call s:CamelCaseMotion( a:direction, a:count, 'iv' )
     endif
 endfunction
+" }}}1
 
-onoremap <script> i,w :call CamelCaseInnerMotion('w', v:count1)<CR>
-onoremap <script> i,b :call CamelCaseInnerMotion('b', v:count1)<CR>
-onoremap <script> i,e :call CamelCaseInnerMotion('e', v:count1)<CR>
+"- mappings -------------------------------------------------------------------
+" The count is passed into the function through the special variable 'v:count1',
+" which is easier than misusing the :[range] that :call supports. 
+" <C-U> is used to delete the unused range. 
+" Another option would be to use a custom 'command! -count=1', but that doesn't
+" work with the normal mode mapping: When a count is typed before the mapping,
+" the ':' will convert a count of 3 into ':.,+2MyCommand', but ':3MyCommand'
+" would be required to use -count and <count>. 
+"
+" We do not provide the fourth "backward to end" motion (,E), because it is
+" seldomly used. 
+
+
+function! s:CreateMappings() "{{{1
+    " Create mappings according to this template:
+    " (* stands for the mode [nov], ? for the underlying motion [wbe].) 
+    "
+    " *noremap <script> <Plug>CamelCaseMotion_? :<C-U>call <SID>CamelCaseMotion('?',v:count1,'*')<CR>
+    " if ! hasmapto('<Plug>CamelCaseMotion_?', '*')
+    "	  *map <silent> ,? <Plug>CamelCaseMotion_?
+    " endif
+
+    for l:mode in ['n', 'o', 'v']
+	for l:motion in ['w', 'b', 'e']
+	    let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
+	    execute l:mode . 'noremap <script> ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseMotion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
+	    if ! hasmapto(l:targetMapping, l:mode)
+		execute l:mode . 'map <silent> ,' . l:motion . ' ' . l:targetMapping 
+	    endif
+	endfor
+    endfor
+endfunction
+" }}}1
+call s:CreateMappings()
+
+
+onoremap <script> i,w :call <SID>CamelCaseInnerMotion('w', v:count1)<CR>
+onoremap <script> i,b :call <SID>CamelCaseInnerMotion('b', v:count1)<CR>
+onoremap <script> i,e :call <SID>CamelCaseInnerMotion('e', v:count1)<CR>
 
 " VIM's built-in inner text objects also work in visual mode; they have
 " different behavior depending on whether visual mode has just been entered or
 " whether text has already been selected. 
 " We deviate from that and always override the existing selection. 
-vnoremap <script> i,w :<C-U>call CamelCaseInnerMotion('w', v:count1)<CR>
-vnoremap <script> i,b :<C-U>call CamelCaseInnerMotion('b', v:count1)<CR>
-vnoremap <script> i,e :<C-U>call CamelCaseInnerMotion('e', v:count1)<CR>
+vnoremap <script> i,w :<C-U>call <SID>CamelCaseInnerMotion('w', v:count1)<CR>
+vnoremap <script> i,b :<C-U>call <SID>CamelCaseInnerMotion('b', v:count1)<CR>
+vnoremap <script> i,e :<C-U>call <SID>CamelCaseInnerMotion('e', v:count1)<CR>
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
