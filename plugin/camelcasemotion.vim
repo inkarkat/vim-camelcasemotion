@@ -14,16 +14,22 @@
 "   boundaries and uppercase letters. The motions also work on underscore
 "   notation, where words are delimited by underscore ('_') characters. 
 "   From here on, both CamelCase and underscore_notation entities are referred
-"   to as "words" (in double quotes). 
+"   to as "words" (in double quotes). Just like with the regular motions, a
+"   [count] can be prepended to move over multiple "words" at once. 
 "   Outside of "words" (e.g. in non-keyword characters like // or ;), the new
 "   motions move just like the regular motions. 
+"
+"   VIM provides a built-in text object called 'inner word' ('iw'), which works
+"   in operator-pending and visual mode. Analog to that, this script defines
+"   inner "word" motions 'i,w', 'i,b' and 'i,e', which select the "word" (or
+"   multiple "words" if a [count] is given) where the cursor is located. 
 "
 " USAGE:
 "   Use the new motions ',w', ',b' and ',e' in normal mode, operator-pending
 "   mode (cp. :help operator), and visual mode. For example, type 'bc,w' to
 "   change 'Camel' in 'CamelCase' to something else. 
 "
-" EXAMPLE:
+" EXAMPLE: motions
 "   Given the following CamelCase identifiers in a source code fragment:
 "	set Script31337PathAndNameWithoutExtension11=%~dpn0
 "	set Script31337PathANDNameWITHOUTExtension11=%~dpn0
@@ -36,6 +42,16 @@
 "   ,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
 "   ,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
 "	extensio[n], 1[1], dpn[0]
+"
+" EXAMPLE: inner motions
+"   Given the following identifier, with the cursor positioned at [x]:
+"	script_31337_path_and_na[m]e_without_extension_11
+"
+"   v3i,w selects script_31337_path_and_[name_without_extension_]11
+"   v3i,b selects script_31337_[path_and_name]_without_extension_11
+"   v3i,e selects script_31337_path_and_[name_without_extension]_11
+"   Instead of visual mode, you can also use c3i,w to change, d3i,w to delete,
+"   gU3i,w to upper-case, and so on. 
 "
 " INSTALLATION: {{{1
 "   Put the script into your user or system VIM plugin directory (e.g.
@@ -51,9 +67,17 @@
 "
 "   Example: Replace the default 'w', 'b' and 'e' mappings instead of defining
 "   additional mappings ',w', ',b' and ',e':
-"       map <silent> w <Plug>CamelCaseMotion_w
-"       map <silent> b <Plug>CamelCaseMotion_b
-"       map <silent> e <Plug>CamelCaseMotion_e
+"	map <silent> w <Plug>CamelCaseMotion_w
+"	map <silent> b <Plug>CamelCaseMotion_b
+"	map <silent> e <Plug>CamelCaseMotion_e
+"
+"   Example: Replace default 'iw' text-object and define 'ib' and 'ie' motions: 
+"	omap <silent> iw <Plug>CamelCaseMotion_iw
+"	vmap <silent> iw <Plug>CamelCaseMotion_iw
+"	omap <silent> ib <Plug>CamelCaseMotion_ib
+"	vmap <silent> ib <Plug>CamelCaseMotion_ib
+"	omap <silent> ie <Plug>CamelCaseMotion_ie
+"	vmap <silent> ie <Plug>CamelCaseMotion_ie
 "
 " LIMITATIONS:
 "
@@ -83,6 +107,10 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS {{{1
+"   1.40.015	24-Apr-2008	ENH: Added inner "word" text objects 'i,w' etc.
+"				that work analoguous to the built-in 'iw' text
+"				object. Thanks to David Kotchan for this
+"				suggestion. 
 "   1.30.014	20-Apr-2008	The motions now also stop at non-keyword
 "				boundaries, just like the regular motions. This
 "				has no effect inside a CamelCaseWord or inside
@@ -346,8 +374,7 @@ endfunction
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used. 
 
-
-function! s:CreateMappings() "{{{1
+function! s:CreateMotionMappings() "{{{1
     " Create mappings according to this template:
     " (* stands for the mode [nov], ? for the underlying motion [wbe].) 
     "
@@ -367,19 +394,39 @@ function! s:CreateMappings() "{{{1
     endfor
 endfunction
 " }}}1
-call s:CreateMappings()
 
-
-onoremap <script> i,w :call <SID>CamelCaseInnerMotion('w', v:count1)<CR>
-onoremap <script> i,b :call <SID>CamelCaseInnerMotion('b', v:count1)<CR>
-onoremap <script> i,e :call <SID>CamelCaseInnerMotion('e', v:count1)<CR>
-
+" To create a text motion, a mapping for operator-pending mode needs to be
+" defined. This mapping should move the cursor according to the implemented
+" motion, or mark the covered text via a visual selection. As inner text motions
+" need to mark both to the left and right of the cursor position, the visual
+" selection needs to be used. 
+"
 " VIM's built-in inner text objects also work in visual mode; they have
 " different behavior depending on whether visual mode has just been entered or
 " whether text has already been selected. 
 " We deviate from that and always override the existing selection. 
-vnoremap <script> i,w :<C-U>call <SID>CamelCaseInnerMotion('w', v:count1)<CR>
-vnoremap <script> i,b :<C-U>call <SID>CamelCaseInnerMotion('b', v:count1)<CR>
-vnoremap <script> i,e :<C-U>call <SID>CamelCaseInnerMotion('e', v:count1)<CR>
+function! s:CreateInnerMotionMappings() "{{{1
+    " Create mappings according to this template:
+    " (* stands for the mode [ov], ? for the underlying motion [wbe].) 
+    "
+    " *noremap <script> <Plug>CamelCaseMotion_i? :<C-U>call <SID>CamelCaseInnerMotion('?',v:count1)<CR>
+    " if ! hasmapto('<Plug>CamelCaseInnerMotion_i?', '*')
+    "	  *map <silent> i,? <Plug>CamelCaseInnerMotion_i?
+    " endif
+
+    for l:mode in ['o', 'v']
+	for l:motion in ['w', 'b', 'e']
+	    let l:targetMapping = '<Plug>CamelCaseMotion_i' . l:motion
+	    execute l:mode . 'noremap <script> ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseInnerMotion(''' . l:motion . ''',v:count1)<CR>'
+	    if ! hasmapto(l:targetMapping, l:mode)
+		execute l:mode . 'map <silent> i,' . l:motion . ' ' . l:targetMapping 
+	    endif
+	endfor
+    endfor
+endfunction
+" }}}1
+
+call s:CreateMotionMappings()
+call s:CreateInnerMotionMappings()
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=marker :
