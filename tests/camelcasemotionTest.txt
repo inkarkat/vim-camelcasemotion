@@ -9,3 +9,17 @@
 " CamelCaseWordAtTheEndOfLine
 " underscore_word_at_the_END_OF_LINE
 " CamelCase_Word Script_31337Path_AndName_AND_WithoutExtension11_FOO_FooBar foo
+   
+
+
+
+default (|) / camelcase (|^) forward (above) / backward (below) motion:
+   |    v    |  |  ||    || | | |       |     v    |
+   HelloWorld() // .print's a @@message Hello_World!!
+       ^    | |  | |    ||| |  |      |     ^     | |
+
+visual mode inclusive default (|) / camelcase (|^) forward (above) / backward (below) motion:
+   |   v    |  |  ||    || | | |       |     v    |
+   HelloWorld() // .print's a @@message Hello_World!!
+       ^    | |  | |    ||| |  |      |     ^     | |
+                         * missing with selection=exclusive
