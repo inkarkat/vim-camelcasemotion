@@ -107,6 +107,8 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS {{{1
+"   1.40.018	30-Jun-2008	Minor: Removed unnecessary <script> from
+"				mappings. 
 "   1.40.017	19-May-2008	BF: Now using :normal! to be independent from
 "				any user mappings. Thanks to Neil Walker for the
 "				patch. 
@@ -115,7 +117,7 @@
 "				(e.g. 1234.56789). Thanks to Wasim Ahmed for
 "				reporting this. 
 "   1.40.015	24-Apr-2008	ENH: Added inner "word" text objects 'i,w' etc.
-"				that work analoguous to the built-in 'iw' text
+"				that work analogous to the built-in 'iw' text
 "				object. Thanks to David Kotchan for this
 "				suggestion. 
 "   1.30.014	20-Apr-2008	The motions now also stop at non-keyword
@@ -216,18 +218,18 @@
 "	0.01	11-Oct-2005	file creation
 
 " Avoid installing twice or when in compatible mode
-if exists("loaded_camelcasemotion") || (v:version < 700)
+if exists('g:loaded_camelcasemotion') || (v:version < 700)
     finish
 endif
-let loaded_camelcasemotion = 1
+let g:loaded_camelcasemotion = 1
 " }}}1
 
 "- functions ------------------------------------------------------------------"
 function! s:CamelCaseMove( direction, count, mode ) " {{{1
     " Note: There is no inversion of the regular expression character class
     " 'keyword character' (\k). We need an inversion "non-keyword" defined as
-    " "any non-whitespace character that is not a keyword character (e.g.
-    " [!@#$%^&*()]. This can be specified via a non-whitespace character in
+    " "any non-whitespace character that is not a keyword character" (e.g.
+    " [!@#$%^&*()]). This can be specified via a non-whitespace character in
     " whose place no keyword character matches (\k\@!\S). 
 
     "echo "count is " . a:count
@@ -395,7 +397,7 @@ function! s:CreateMotionMappings() "{{{1
     " Create mappings according to this template:
     " (* stands for the mode [nov], ? for the underlying motion [wbe].) 
     "
-    " *noremap <script> <Plug>CamelCaseMotion_? :<C-U>call <SID>CamelCaseMotion('?',v:count1,'*')<CR>
+    " *noremap <Plug>CamelCaseMotion_? :<C-U>call <SID>CamelCaseMotion('?',v:count1,'*')<CR>
     " if ! hasmapto('<Plug>CamelCaseMotion_?', '*')
     "	  *map <silent> ,? <Plug>CamelCaseMotion_?
     " endif
@@ -403,7 +405,7 @@ function! s:CreateMotionMappings() "{{{1
     for l:mode in ['n', 'o', 'v']
 	for l:motion in ['w', 'b', 'e']
 	    let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
-	    execute l:mode . 'noremap <script> ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseMotion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
+	    execute l:mode . 'noremap ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseMotion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
 	    if ! hasmapto(l:targetMapping, l:mode)
 		execute l:mode . 'map <silent> ,' . l:motion . ' ' . l:targetMapping 
 	    endif
@@ -426,7 +428,7 @@ function! s:CreateInnerMotionMappings() "{{{1
     " Create mappings according to this template:
     " (* stands for the mode [ov], ? for the underlying motion [wbe].) 
     "
-    " *noremap <script> <Plug>CamelCaseMotion_i? :<C-U>call <SID>CamelCaseInnerMotion('?',v:count1)<CR>
+    " *noremap <Plug>CamelCaseMotion_i? :<C-U>call <SID>CamelCaseInnerMotion('?',v:count1)<CR>
     " if ! hasmapto('<Plug>CamelCaseInnerMotion_i?', '*')
     "	  *map <silent> i,? <Plug>CamelCaseInnerMotion_i?
     " endif
@@ -434,7 +436,7 @@ function! s:CreateInnerMotionMappings() "{{{1
     for l:mode in ['o', 'v']
 	for l:motion in ['w', 'b', 'e']
 	    let l:targetMapping = '<Plug>CamelCaseMotion_i' . l:motion
-	    execute l:mode . 'noremap <script> ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseInnerMotion(''' . l:motion . ''',v:count1)<CR>'
+	    execute l:mode . 'noremap ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseInnerMotion(''' . l:motion . ''',v:count1)<CR>'
 	    if ! hasmapto(l:targetMapping, l:mode)
 		execute l:mode . 'map <silent> i,' . l:motion . ' ' . l:targetMapping 
 	    endif
