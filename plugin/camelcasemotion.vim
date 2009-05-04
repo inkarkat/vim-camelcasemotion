@@ -7,7 +7,7 @@
 "   ("anIdentifier") or underscore_notation ("an_identifier") naming
 "   conventions for identifiers. The best way to navigate inside those
 "   identifiers using VIM built-in motions is the '[count]f{char}' motion, i.e.
-"   'f<uppercase char>' or 'f_', respectively. But we can make this easier: 
+"   'f{uppercase-char}' or 'f_', respectively. But we can make this easier: 
 "
 "   This script defines motions ',w', ',b' and ',e' (similar to 'w', 'b', 'e'),
 "   which do not move word-wise (forward/backward), but Camel-wise; i.e. to word
