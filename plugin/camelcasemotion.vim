@@ -73,11 +73,11 @@
 "
 "   Example: Replace default 'iw' text-object and define 'ib' and 'ie' motions: 
 "	omap <silent> iw <Plug>CamelCaseMotion_iw
-"	vmap <silent> iw <Plug>CamelCaseMotion_iw
+"	xmap <silent> iw <Plug>CamelCaseMotion_iw
 "	omap <silent> ib <Plug>CamelCaseMotion_ib
-"	vmap <silent> ib <Plug>CamelCaseMotion_ib
+"	xmap <silent> ib <Plug>CamelCaseMotion_ib
 "	omap <silent> ie <Plug>CamelCaseMotion_ie
-"	vmap <silent> ie <Plug>CamelCaseMotion_ie
+"	xmap <silent> ie <Plug>CamelCaseMotion_ie
 "
 " LIMITATIONS:
 "
@@ -107,6 +107,10 @@
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS {{{1
+"   1.41.019	05-May-2009	Do not create mappings for select mode;
+"				according to|Select-mode|, printable character
+"				commands should delete the selection and insert
+"				the typed characters. 
 "   1.40.018	30-Jun-2008	Minor: Removed unnecessary <script> from
 "				mappings. 
 "   1.40.017	19-May-2008	BF: Now using :normal! to be independent from
@@ -407,7 +411,7 @@ function! s:CreateMotionMappings() "{{{1
 	    let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
 	    execute l:mode . 'noremap ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseMotion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
 	    if ! hasmapto(l:targetMapping, l:mode)
-		execute l:mode . 'map <silent> ,' . l:motion . ' ' . l:targetMapping 
+		execute (l:mode ==# 'v' ? 'x' : l:mode) . 'map <silent> ,' . l:motion . ' ' . l:targetMapping 
 	    endif
 	endfor
     endfor
@@ -438,7 +442,7 @@ function! s:CreateInnerMotionMappings() "{{{1
 	    let l:targetMapping = '<Plug>CamelCaseMotion_i' . l:motion
 	    execute l:mode . 'noremap ' . l:targetMapping . ' :<C-U>call <SID>CamelCaseInnerMotion(''' . l:motion . ''',v:count1)<CR>'
 	    if ! hasmapto(l:targetMapping, l:mode)
-		execute l:mode . 'map <silent> i,' . l:motion . ' ' . l:targetMapping 
+		execute (l:mode ==# 'v' ? 'x' : l:mode) . 'map <silent> i,' . l:motion . ' ' . l:targetMapping 
 	    endif
 	endfor
     endfor
