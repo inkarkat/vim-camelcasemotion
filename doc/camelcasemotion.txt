@@ -116,7 +116,8 @@ KNOWN PROBLEMS				      *camelcasemotion-known-problems*
   CamelCaseWords, anyway. 
 - The operator-pending and visual mode ,e mapping doesn't work properly when
   it reaches the end of the buffer; the final character of the moved-over
-  "word" remains. As a workaround, use the default 'e' motion instead of ',e'. 
+  "word" remains, and a beep is issued. As a workaround, use the default 'e'
+  motion instead of ',e'. 
 - When the Vim setting 'selection' is not set to "exclusive", a
   forward-backward combination in visual mode (e.g. 'v,w,b') selects one
   additional character to the left, instead of only the character where the
@@ -125,6 +126,14 @@ KNOWN PROBLEMS				      *camelcasemotion-known-problems*
 
 ==============================================================================
 TODO							*camelcasemotion-todo*
+
+IDEAS						       *camelcasemotion-ideas*
+
+- Use search('\%#.\%$', 'cnW') to detect the operator-pending motion to the
+  end of the buffer and temporarily append a new line / space character to
+  work around the end-of-buffer problem. Unfortunately, the addition cannot be
+  undone as part of the motion (won't work then), so we'd have to use an
+  autocmd to remove it later. 
 
 ==============================================================================
 HISTORY						     *camelcasemotion-history*
