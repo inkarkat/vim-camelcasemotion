@@ -3,7 +3,7 @@
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher. 
 "
-" Copyright: (C) 2007-2009 by Ingo Karkat
+" Copyright: (C) 2007-2011 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -11,6 +11,8 @@
 "   1.52.002	18-Oct-2011	FIX: Correct forward-to-end motion over
 "				lowercase part in "lowerCamel". Found this by
 "				chance in GitHub fork by Kevin Lee (bkad). 
+"				BUG: Correct wrong stop on second letter of
+"				ACRONYM at the beginning of a word "AXBCText". 
 "   1.50.001	05-May-2009	Do not create mappings for select mode;
 "				according to|Select-mode|, printable character
 "				commands should delete the selection and insert
@@ -76,8 +78,8 @@ function! s:Move( direction, count, mode )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
 	    " beginning of ...
-	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | ACRONYM followed by CamelCase or number | CamelCase | underscore followed by ACRONYM, Camel, lowercase or number
-	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\|\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|_\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction )
+	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | start of ACRONYM followed by CamelCase or number | CamelCase | underscore followed by ACRONYM, Camel, lowercase or number
+	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\|\U\zs\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|_\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction )
 	    " Note: word must be defined as '\<\D' to avoid that a word like
 	    " 1234Test is moved over as [1][2]34[T]est instead of [1]234[T]est
 	    " because \< matches with zero width, and \d\+ will then start
