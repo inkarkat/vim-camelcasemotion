@@ -13,6 +13,9 @@ function! s:RetrievePoints( markerText )
 
     return map(sort(keys(l:points)), 'l:points[v:val]')
 endfunction
+function! s:MarkCol( text, col )
+    return substitute(a:text, '\%' . a:col . 'c.', '[\0]', '')
+endfunction
 function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosCommand, description )
     silent %delete _
     call append(0, a:lines)
@@ -31,6 +34,22 @@ function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosComman
 	    return
 	endif
 
-	call vimtap#Is(l:currentPos, l:points[l:cnt], a:description . ', motion #' . (l:cnt + 1))
+	let l:description = printf('%s over %s, motion #%d', a:motionMapping, a:description, l:cnt + 1)
+	let l:point = l:points[l:cnt]
+	if l:currentPos == l:point
+	    call vimtap#Pass(l:description)
+	else
+	    let l:diag =
+	    \   printf('expected cursor in col %d: %s', l:point[1],      s:MarkCol(getline(l:point[0])     , l:point[1])) . "\n" .
+	    \   printf('but cursor was  in col %d: %s', l:currentPos[1], s:MarkCol(getline(l:currentPos[0]), l:currentPos[1]))
+	    if l:currentPos[0] != l:point[0]
+		let l:diag .= printf("\nof line %d rather than %d", l:currentPos[0], l:point[0])
+	    endif
+
+	    call vimtap#Fail(l:description)
+	    call vimtap#Diag("Test '" . strtrans(l:description) . "' failed:\n" . l:diag)
+
+	    break   " Doesn't make sense to continue with a wrong position. 
+	endif
     endfor
 endfunction
