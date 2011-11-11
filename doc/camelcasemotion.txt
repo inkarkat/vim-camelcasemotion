@@ -102,20 +102,20 @@ your |vimrc|).
 
 EXAMPLE: Replace the default |w|, |b| and |e| mappings instead of defining
 additional mappings |,w|, |,b|  and |,e| : >
-    map <silent> w <Plug>CamelCaseMotion_w
-    map <silent> b <Plug>CamelCaseMotion_b
-    map <silent> e <Plug>CamelCaseMotion_e
+    map w <Plug>CamelCaseMotion_w
+    map b <Plug>CamelCaseMotion_b
+    map e <Plug>CamelCaseMotion_e
     sunmap w
     sunmap b
     sunmap e
 
 EXAMPLE: Replace default |iw| text-object and define |ib| and  |ie| motions: >
-    omap <silent> iw <Plug>CamelCaseMotion_iw
-    xmap <silent> iw <Plug>CamelCaseMotion_iw
-    omap <silent> ib <Plug>CamelCaseMotion_ib
-    xmap <silent> ib <Plug>CamelCaseMotion_ib
-    omap <silent> ie <Plug>CamelCaseMotion_ie
-    xmap <silent> ie <Plug>CamelCaseMotion_ie
+    omap iw <Plug>CamelCaseMotion_iw
+    xmap iw <Plug>CamelCaseMotion_iw
+    omap ib <Plug>CamelCaseMotion_ib
+    xmap ib <Plug>CamelCaseMotion_ib
+    omap ie <Plug>CamelCaseMotion_ie
+    xmap ie <Plug>CamelCaseMotion_ie
 
 ==============================================================================
 KNOWN PROBLEMS				      *camelcasemotion-known-problems*
@@ -154,6 +154,19 @@ IDEAS						       *camelcasemotion-ideas*
 
 ==============================================================================
 HISTORY						     *camelcasemotion-history*
+
+1.52	12-Nov-2011
+- FIX: Correct forward-to-end motion over lowercase part in "lowerCamel".
+  Found this by chance in GitHub fork by Kevin Lee (bkad). 
+- BUG: Correct wrong stop on second letter of ACRONYM at the beginning of a
+  word "AXBCText". 
+- The motion functionality is automatically tested via a runVimTests
+  (vimscript #2565) test suite. 
+- Many motion fixes due to enhanced test suite, most to support any keyword
+  character in addition to lowercase letters. 
+
+1.51	30-Sep-2011
+Use <silent> for <Plug> mapping instead of default mapping. 
 
 1.50	05-May-2009
 - Do not create mappings for select mode; according to |Select-mode|,
