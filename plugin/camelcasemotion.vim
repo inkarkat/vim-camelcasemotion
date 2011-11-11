@@ -4,7 +4,7 @@
 "   - Requires Vim 7.0 or higher. 
 "   - camelcasemotion.vim autoload script. 
 "
-" Copyright: (C) 2007-2011 by Ingo Karkat
+" Copyright: (C) 2007-2011 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
 "
 " Source: Based on vimtip #1016 by Anthony Van Ham. 
