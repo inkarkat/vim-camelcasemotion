@@ -8,6 +8,9 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.60.003	12-Nov-2011	Many motion fixes due to enhanced test suite,
+"				most to support any keyword character in
+"				addition to lowercase letters. 
 "   1.52.002	18-Oct-2011	FIX: Correct forward-to-end motion over
 "				lowercase part in "lowerCamel". Found this by
 "				chance in GitHub fork by Kevin Lee (bkad). 
@@ -36,15 +39,15 @@ function! s:Move( direction, count, mode )
 	    " "Forward to end" motion. 
 	    "call search( '\>\|\(\a\|\d\)\+\ze_', 'We' )
 	    " end of ...
-	    " number | ACRONYM followed by CamelCase or number | lowercase followed by CamelCase, ACRONYM, or number | CamelCase | underscore_notation | non-keyword | word
+	    " number, possibly followed by word | ACRONYM followed by CamelCase, number, or non-alphabetic keyword | word followed by CamelCase, ACRONYM, or number | CamelCase | underscore_notation | non-keyword | word
 	    " Note: Branches are ordered from specific to unspecific so that
 	    " in case of multiple matches, the more specific (and usually
 	    " longer) one it used. 
-	    call search( '\d\+\|\u\+\ze\%(\u\l\|\d\)\|\l\+\ze\%(\u\|\d\)\|\u\l\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(_\@!\k\)\+\>', 'We' )
+	    call search( '\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\%(\%(\u\|\d\|_\)\@!\k\)\+\ze\%(\u\|\d\)\|\u\%(\%(\u\|\d\)\@!\k\)\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(\%(\d\|_\)\@!\k\)\+\>', 'We' )
 	    " Note: word must be defined as '\k\>'; '\>' on its own somehow
 	    " dominates over the previous branch. Plus, \k must exclude the
-	    " underscore, or a trailing one will be incorrectly moved over:
-	    " '\%(_\@!\k\)'. 
+	    " underscore, or a trailing one will be incorrectly moved over, and
+	    " numbers. 
 	    if a:mode == 'o'
 		" Note: Special additional treatment for operator-pending mode
 		" "forward to end" motion. 
@@ -81,10 +84,10 @@ function! s:Move( direction, count, mode )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
 	    " beginning of ...
-	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number | start of ACRONYM followed by CamelCase or number | CamelCase | underscore followed by ACRONYM, Camel, lowercase or number
+	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number, possibly followed by word | start of ACRONYM followed by CamelCase, number, or word | CamelCase | first non-underscore keyword after underscore | word after ACRONYM
 	    " Note: Branches are ordered from unspecific to specific, so that
 	    " the cursor moves the least amount of text. 
-	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\|\u\@<!\u\+\ze\%(\u\l\|\d\)\|\u\l\+\|_\zs\%(\u\+\|\u\l\+\|\l\+\|\d\+\)', 'W' . l:direction )
+	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\@<!\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\u\l\+\|_\zs\%(_\@!\k\)\+\|\%(\u\u\)\@<=\%(\%(\u\|\d\)\@!\k\)', 'W' . l:direction )
 	    " Note: word must be defined as '\<\D' to avoid that a word like
 	    " 1234Test is moved over as [1][2]34[T]est instead of [1]234[T]est
 	    " because \< matches with zero width, and \d\+ will then start
