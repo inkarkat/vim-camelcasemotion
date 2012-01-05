@@ -4,6 +4,7 @@
 							 *camelcasemotion.vim*
 description			|camelcasemotion-description|
 usage				|camelcasemotion-usage|
+boundaries			|camelcasemotion-boundaries|
 installation			|camelcasemotion-installation|
 configuration			|camelcasemotion-configuration|
 known problems			|camelcasemotion-known-problems|
@@ -66,6 +67,14 @@ v3i,b selects script_31337_[path_and_name]_without_extension_11
 v3i,e selects script_31337_path_and_[name_without_extension]_11
 Instead of visual mode, you can also use c3i,w to change, d3i,w to delete,
 gU3i,w to upper-case, and so on. 
+
+BOUNDARIES					  *camelcasemotion-boundaries*
+
+All the normal word boundaries of the |w|, |b|, and |e| motions apply here as
+well: whitespace, sequences of keyword characters and non-keyword-characters. 
+Boundaries between underscore_notation are defined by the "_" character. 
+A new CamelWord starts with an uppercase letter ("Camel", "ACRONYM", "C####")
+or a number ("123", "42foo#bar"). 
 
 ==============================================================================
 INSTALLATION					*camelcasemotion-installation*
@@ -152,8 +161,17 @@ IDEAS						       *camelcasemotion-ideas*
   out interference with containment in 'iskeyword' and think through need to
   buffer-local setting. (Submitted anonymously 13-Nov-2010 on Vim Tips Wiki.) 
 
+- Replace complex and indecipherable search regexps with a state machine that
+  moves from character to character, in the hope that it will actually be
+  understandable, and may eventually even be turned into a C implementation
+  that goes into Vim core. 
+
 ==============================================================================
 HISTORY						     *camelcasemotion-history*
+
+1.60	03-Dec-2011
+- Many motion fixes due to enhanced test suite, most to support any keyword
+  character in addition to lowercase letters. 
 
 1.52	12-Nov-2011
 - FIX: Correct forward-to-end motion over lowercase part in "lowerCamel".
@@ -162,10 +180,8 @@ HISTORY						     *camelcasemotion-history*
   word "AXBCText". 
 - The motion functionality is automatically tested via a runVimTests
   (vimscript #2565) test suite. 
-- Many motion fixes due to enhanced test suite, most to support any keyword
-  character in addition to lowercase letters. 
 
-1.51	30-Sep-2011
+1.51	30-Sep-2011 (unreleased)
 Use <silent> for <Plug> mapping instead of default mapping. 
 
 1.50	05-May-2009
@@ -214,7 +230,7 @@ First published version.
 Started development based on vimtip #1016 by Anthony Van Ham. 
 
 ==============================================================================
-Copyright: (C) 2007-2009 Ingo Karkat
+Copyright: (C) 2007-2011 Ingo Karkat
 The VIM LICENSE applies to this script; see |copyright|. 
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
