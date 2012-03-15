@@ -40,6 +40,12 @@ SOURCE									     *
 Based on vimtip #1016 by Anthony Van Ham
     http://vim.wikia.com/wiki/Moving_through_camel_case_words 
 
+RELATED WORKS								     *
+
+- CamelCaseComplete (vimscript #3915) provides insert mode completion that
+  expands CamelCaseWords and underscore_words based on anchor characters for
+  each word fragment. 
+
 ==============================================================================
 USAGE						       *camelcasemotion-usage*
 
