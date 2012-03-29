@@ -8,6 +8,12 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.60.004	03-Dec-2011	BUG: Correct missing stops on numbers and
+"				CamelCase as the second part of an
+"				underscore_word in "CamelCase_BugIsHere". 
+"				This was probably introduced by the recent
+"				changes. 
+"				Cp. tests/bug_CamelCase_BugIsHere_w.vim. 
 "   1.60.003	12-Nov-2011	Many motion fixes due to enhanced test suite,
 "				most to support any keyword character in
 "				addition to lowercase letters. 
@@ -84,10 +90,10 @@ function! s:Move( direction, count, mode )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+', 'W' . l:direction )
 	    "call search( '\<\|\u\(\l\+\|\u\+\ze\u\)\|\d\+\|_\zs\(\a\|\d\)\+', 'W' . l:direction )
 	    " beginning of ...
-	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number, possibly followed by word | start of ACRONYM followed by CamelCase, number, or word | CamelCase | first non-underscore keyword after underscore | word after ACRONYM
+	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number, possibly followed by word | start of ACRONYM followed by CamelCase, number, or word | CamelCase | number after underscore | non-underscore non-whitespace after underscore | word after ACRONYM
 	    " Note: Branches are ordered from unspecific to specific, so that
 	    " the cursor moves the least amount of text. 
-	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\@<!\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\u\l\+\|_\zs\%(_\@!\k\)\+\|\%(\u\u\)\@<=\%(\%(\u\|\d\)\@!\k\)', 'W' . l:direction )
+	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\@<!\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\u\l\+\|_\zs\%(\d\+\)\|_\zs\%(_\@!\S\)\|\%(\u\u\)\@<=\%(\%(\u\|\d\)\@!\k\)', 'W' . l:direction )
 	    " Note: word must be defined as '\<\D' to avoid that a word like
 	    " 1234Test is moved over as [1][2]34[T]est instead of [1]234[T]est
 	    " because \< matches with zero width, and \d\+ will then start
