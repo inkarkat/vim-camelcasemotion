@@ -50,7 +50,7 @@ RELATED WORKS								     *
 USAGE						       *camelcasemotion-usage*
 
 MOTIONS						     *camelcasemotion-motions*
-								*,w* *,b* *,e*
+		      *,w* *,b* *,e* *v_,w* *v_,b* *v_,e* *o_,w* *o_,b* *o_,e*
 Use the new motions |,w| |,b| and |,e| in normal mode, operator-pending mode
 (cp. |operator|), and visual mode. For example, type bc,w to change "Camel"
 in "CamelCase" to something else. 
