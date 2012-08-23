@@ -197,7 +197,7 @@ IDEAS						       *camelcasemotion-ideas*
 ==============================================================================
 HISTORY						     *camelcasemotion-history*
 
-1.60	03-Dec-2011
+1.60	30-Mar-2012
 - Many motion fixes due to enhanced test suite, most to support any keyword
   character in addition to lowercase letters. 
 
@@ -258,7 +258,7 @@ First published version.
 Started development based on vimtip #1016 by Anthony Van Ham. 
 
 ==============================================================================
-Copyright: (C) 2007-2011 Ingo Karkat
+Copyright: (C) 2007-2012 Ingo Karkat
 The VIM LICENSE applies to this script; see |copyright|. 
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
