@@ -8,6 +8,10 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS 
+"   1.60.005	30-Mar-2012	BUG: Correct missing stops on
+"				underscore_notation as the second part following
+"				a Capitalized word.
+"				Cp. tests/bug_CamelCase_bug_here_e.vim.
 "   1.60.004	03-Dec-2011	BUG: Correct missing stops on numbers and
 "				CamelCase as the second part of an
 "				underscore_word in "CamelCase_BugIsHere". 
@@ -48,8 +52,8 @@ function! s:Move( direction, count, mode )
 	    " number, possibly followed by word | ACRONYM followed by CamelCase, number, or non-alphabetic keyword | word followed by CamelCase, ACRONYM, or number | CamelCase | underscore_notation | non-keyword | word
 	    " Note: Branches are ordered from specific to unspecific so that
 	    " in case of multiple matches, the more specific (and usually
-	    " longer) one it used. 
-	    call search( '\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\%(\%(\u\|\d\|_\)\@!\k\)\+\ze\%(\u\|\d\)\|\u\%(\%(\u\|\d\)\@!\k\)\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(\%(\d\|_\)\@!\k\)\+\>', 'We' )
+	    " longer) one is used. 
+	    call search( '\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\%(\%(\u\|\d\|_\)\@!\k\)\+\ze\%(\u\|\d\)\|\u\%(\%(\u\|\d\|_\)\@!\k\)\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(\%(\d\|_\)\@!\k\)\+\>', 'We' )
 	    " Note: word must be defined as '\k\>'; '\>' on its own somehow
 	    " dominates over the previous branch. Plus, \k must exclude the
 	    " underscore, or a trailing one will be incorrectly moved over, and
