@@ -108,10 +108,10 @@ or a number ("123", "42foo#bar").
 INSTALLATION					*camelcasemotion-installation*
 
 This script is packaged as a |vimball|. If you have the "gunzip" decompressor
-in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
 vimball or via the |:UseVimball| command. >
-    vim camelcasemotion.vba.gz
+    vim camelcasemotion*.vmb.gz
     :so %
 To uninstall, use the |:RmVimball| command.
 
@@ -176,12 +176,6 @@ KNOWN PROBLEMS				      *camelcasemotion-known-problems*
 TODO							*camelcasemotion-todo*
 
 IDEAS						       *camelcasemotion-ideas*
-
-- Use search('\%#.\%$', 'cnW') to detect the operator-pending motion to the
-  end of the buffer and temporarily append a new line / space character to
-  work around the end-of-buffer problem. Unfortunately, the addition cannot be
-  undone as part of the motion (won't work then), so we'd have to use an
-  autocmd to remove it later.
 
 - Make separator character (currently underscore) configurable so that dashes,
   asterisks, etc. can be added as well. Idea is to replace the single /_/ with
