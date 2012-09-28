@@ -7,6 +7,7 @@ usage				|camelcasemotion-usage|
 boundaries			|camelcasemotion-boundaries|
 installation			|camelcasemotion-installation|
 configuration			|camelcasemotion-configuration|
+limitations			|camelcasemotion-limitations|
 known problems			|camelcasemotion-known-problems|
 todo				|camelcasemotion-todo|
 history				|camelcasemotion-history|
@@ -122,6 +123,18 @@ DEPENDENCIES					*camelcasemotion-dependencies*
 ==============================================================================
 CONFIGURATION				       *camelcasemotion-configuration*
 
+For a permanent configuration, put the following commands into your |vimrc|:
+
+							 *camelcasemotion-c,w*
+There's a special case dating back to vi that |cw| does not include the
+whitespace after a word; it works like ce. If you want the same special case
+for the |c,w| motion and |ciw| text object, define the following additional
+mappings: >
+    :nmap c,w c,e
+    :nmap ciw cie
+If you're using different mappings (see below), you need to adapt this,
+naturally.
+						       *camelcasemotion-remap*
 By default, all mappings start with |,| (comma) as the map leader instead of
 using <Leader>. I personally find the default <Leader> key too far off the
 keyboard to be useful for custom motions (which also cannot be repeated via
@@ -146,7 +159,8 @@ additional mappings |,w|, |,b|  and |,e| : >
     sunmap b
     sunmap e
 
-EXAMPLE: Replace default |iw| text-object and define |ib| and  |ie| motions: >
+EXAMPLE: Replace default |iw| text-object and define analog |ib| and  |ie|
+motions: >
     omap iw <Plug>CamelCaseMotion_iw
     xmap iw <Plug>CamelCaseMotion_iw
     omap ib <Plug>CamelCaseMotion_ib
@@ -155,6 +169,12 @@ EXAMPLE: Replace default |iw| text-object and define |ib| and  |ie| motions: >
     xmap ie <Plug>CamelCaseMotion_ie
 
 ==============================================================================
+LIMITATIONS					 *camelcasemotion-limitations*
+
+- The c,w mapping includes the whitespace after the word, but built-in cw does
+  not. This is a Vim special case that custom motions cannot replicate. Cp.
+  |cw|
+
 KNOWN PROBLEMS				      *camelcasemotion-known-problems*
 
 - A degenerate CamelCaseWord containing '\U\u\d' (e.g. "MaP1Roblem") confuses
@@ -162,15 +182,13 @@ KNOWN PROBLEMS				      *camelcasemotion-known-problems*
   "exclusive". It'll skip "P" and select "P1" in one step. As a workaround,
   use ',w' instead of ',e'; those two mappings have the same effect inside
   CamelCaseWords, anyway.
-- The operator-pending and visual mode ,e mapping doesn't work properly when
-  it reaches the end of the buffer; the final character of the moved-over
-  "word" remains, and a beep is issued. As a workaround, use the default 'e'
-  motion instead of ',e'.
 - When the Vim setting 'selection' is not set to "exclusive", a
   forward-backward combination in visual mode (e.g. 'v,w,b') selects one
   additional character to the left, instead of only the character where the
   motion started. Likewise, extension of the visual selection from the front
   end is off by one additional character.
+- A repeat (via |.|) of the operator-pending mapping loses the previously
+  given [count], and operates on just one fragment.
 
 ==============================================================================
 TODO							*camelcasemotion-todo*
@@ -182,20 +200,23 @@ IDEAS						       *camelcasemotion-ideas*
   a collection /[-_*]/ built from g:CamelCaseMotion_SeparatorCharacters. Check
   out interference with containment in 'iskeyword' and think through need to
   buffer-local setting. (Submitted anonymously 13-Nov-2010 on Vim Tips Wiki.)
-
 - Replace complex and indecipherable search regexps with a state machine that
   moves from character to character, in the hope that it will actually be
   understandable, and may eventually even be turned into a C implementation
   that goes into Vim core.
+- Except for some special cases in camelcasemotion#Motion(), couldn't we use
+  the CountJump plugin and just supply a:Move() as the jump function?
 
 ==============================================================================
 HISTORY						     *camelcasemotion-history*
 
-1.60	TODO
+2.00	TODO
 - Many motion fixes due to enhanced test suite, most to support any keyword
   character in addition to lowercase letters.
 - Also handle move to the buffer's very last character in operator-pending
   mode "forward to end" motion.
+- BUG: Correct missing stop on ACRONYM at the end of a CamelCaseACRONYM.
+  Reported by dlee at https://github.com/bkad/CamelCaseMotion/issues/8
 
 1.52	12-Nov-2011
 - FIX: Correct forward-to-end motion over lowercase part in "lowerCamel".
