@@ -129,11 +129,16 @@ For a permanent configuration, put the following commands into your |vimrc|:
 There's a special case dating back to vi that |cw| does not include the
 whitespace after a word; it works like ce. If you want the same special case
 for the |c,w| motion and |ciw| text object, define the following additional
-mappings: >
-    :nmap c,w c,e
-    :nmap ciw cie
-If you're using different mappings (see below), you need to adapt this,
-naturally.
+mapping: >
+    nmap c,w c,e
+Likewise, the |iw| text object does not include trailing whitespace. If you
+want the camelcasemotion text objects behave the same way, add: >
+    " Must define the default mappings first in order to change them.
+    runtime plugin/camelcasemotion.vim
+    omap i,w i,e
+    xmap i,w i,e
+If you're using different mappings (see below), you need to adapt the
+arguments, naturally.
 						       *camelcasemotion-remap*
 By default, all mappings start with |,| (comma) as the map leader instead of
 using <Leader>. I personally find the default <Leader> key too far off the
@@ -158,7 +163,10 @@ additional mappings |,w|, |,b|  and |,e| : >
     sunmap w
     sunmap b
     sunmap e
-
+In this case, you probably want to restore the special |camelcasemotion-c,w|
+behavior, too: >
+    nmap cw ce
+<
 EXAMPLE: Replace default |iw| text-object and define analog |ib| and  |ie|
 motions: >
     omap iw <Plug>CamelCaseMotion_iw
@@ -167,6 +175,12 @@ motions: >
     xmap ib <Plug>CamelCaseMotion_ib
     omap ie <Plug>CamelCaseMotion_ie
     xmap ie <Plug>CamelCaseMotion_ie
+In this case, you probably want to restore the special |camelcasemotion-c,w|
+behavior, too: >
+    " Must define the default mappings first in order to change them.
+    runtime plugin/camelcasemotion.vim
+    omap iw ie
+    xmap iw ie
 
 ==============================================================================
 LIMITATIONS					 *camelcasemotion-limitations*
