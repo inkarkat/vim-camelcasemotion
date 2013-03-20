@@ -290,7 +290,7 @@ Started development based on vimtip #1016 by Anthony Van Ham.
 
 ==============================================================================
 Copyright: (C) 2007-2012 Ingo Karkat
-The VIM LICENSE applies to this script; see |copyright|.
+The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
 ==============================================================================
