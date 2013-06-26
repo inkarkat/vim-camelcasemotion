@@ -1,3 +1,5 @@
+source helpers/common.vim
+
 function! s:RetrievePoints( markerText )
     let l:markerText = (type(a:markerText) == type([]) ? a:markerText : [a:markerText])
     let l:points = {}
@@ -17,10 +19,7 @@ function! s:MarkCol( text, col )
     return substitute(a:text, '\%' . a:col . 'c.', '[\0]', '')
 endfunction
 function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosCommand, description )
-    silent %delete _
-    call append(0, a:lines)
-    1
-    execute 'normal' (empty(a:startPosCommand) ? '0' : a:startPosCommand) 
+    call Prepare(a:lines, a:startPosCommand)
 
     let l:points = s:RetrievePoints(a:cursorPoints)
     "echomsg string(l:points)
@@ -49,7 +48,7 @@ function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosComman
 	    call vimtap#Fail(l:description)
 	    call vimtap#Diag("Test '" . strtrans(l:description) . "' failed:\n" . l:diag)
 
-	    break   " Doesn't make sense to continue with a wrong position. 
+	    break   " Doesn't make sense to continue with a wrong position.
 	endif
     endfor
 endfunction
