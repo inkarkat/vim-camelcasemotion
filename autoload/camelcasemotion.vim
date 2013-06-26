@@ -112,7 +112,7 @@ function! s:Move( direction, count, mode )
 	    " word | empty line | non-keyword after whitespaces | non-whitespace after word | number, possibly followed by word | start of ACRONYM followed by CamelCase, number, word, or at the end of the keyword | CamelCase | number after underscore | non-underscore non-whitespace after underscore | word after ACRONYM
 	    " Note: Branches are ordered from unspecific to specific, so that
 	    " the cursor moves the least amount of text.
-	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|\>\S\|\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\@<!\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\|\>\)\|\u\l\+\|_\zs\%(\d\+\)\|_\zs\%(_\@!\S\)\|\%(\u\u\)\@<=\%(\%(\u\|\d\)\@!\k\)', 'W' . l:direction )
+	    call search( '\<\D\|^$\|\%(^\|\s\)\+\zs\k\@!\S\|_\@!\>\S\|\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\@<!\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\|_\@!\>\)\|\u\l\+\|_\zs\%(\d\+\)\|_\zs\%(_\@!\S\)\|\%(\u\u\)\@<=\%(\%(\u\|\d\)\@!\k\)', 'W' . l:direction )
 	    " Note: word must be defined as '\<\D' to avoid that a word like
 	    " 1234Test is moved over as [1][2]34[T]est instead of [1]234[T]est
 	    " because \< matches with zero width, and \d\+ will then start
