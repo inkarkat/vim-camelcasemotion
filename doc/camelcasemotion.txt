@@ -224,7 +224,7 @@ IDEAS						       *camelcasemotion-ideas*
 ==============================================================================
 HISTORY						     *camelcasemotion-history*
 
-2.00	TODO
+2.00	RELEASEME
 - Many motion fixes due to enhanced test suite, most to support any keyword
   character in addition to lowercase letters.
 - Also handle move to the buffer's very last character in operator-pending
