@@ -18,8 +18,11 @@ endfunction
 function! s:MarkCol( text, col )
     return substitute(a:text, '\%' . a:col . 'c.', '[\0]', '')
 endfunction
-function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosCommand, description )
+function! TestMotionSequenceWithSetting( lines, cursorPoints, motionMapping, startPosCommand, description, setting )
     call Prepare(a:lines, a:startPosCommand)
+    if ! empty(a:setting)
+	execute 'set' a:setting
+    endif
 
     let l:points = s:RetrievePoints(a:cursorPoints)
     "echomsg string(l:points)
@@ -33,7 +36,7 @@ function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosComman
 	    return
 	endif
 
-	let l:description = printf('%s over %s, motion #%d', a:motionMapping, a:description, l:cnt + 1)
+	let l:description = printf('%s over %s, motion #%d, %s', a:motionMapping, a:description, l:cnt + 1, a:setting)
 	let l:point = l:points[l:cnt]
 	if l:currentPos == l:point
 	    call vimtap#Pass(l:description)
@@ -51,4 +54,8 @@ function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosComman
 	    break   " Doesn't make sense to continue with a wrong position.
 	endif
     endfor
+endfunction
+function! TestMotionSequence( lines, cursorPoints, motionMapping, startPosCommand, description )
+    call TestMotionSequenceWithSetting(a:lines, a:cursorPoints, a:motionMapping, a:startPosCommand, a:description, 'isk+=_')
+    call TestMotionSequenceWithSetting(a:lines, a:cursorPoints, a:motionMapping, a:startPosCommand, a:description, 'isk-=_')
 endfunction
