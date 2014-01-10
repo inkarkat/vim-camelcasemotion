@@ -3,11 +3,13 @@
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher.
 "
-" Copyright: (C) 2007-2012 Ingo Karkat
+" Copyright: (C) 2007-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS
+"   2.00.008	27-Jun-2013	BUG: Correct additional stops on _ (for all
+"				b/e/w motions) when :set iskeyword-=_.
 "   2.00.007	19-Sep-2012	BUG: Correct missing stop on ACRONYM at the end
 "				of a CamelCaseACRONYM. Reported by dlee at
 "				https://github.com/bkad/CamelCaseMotion/issues/8
@@ -59,7 +61,7 @@ function! s:Move( direction, count, mode )
 	    " Note: Branches are ordered from specific to unspecific so that
 	    " in case of multiple matches, the more specific (and usually
 	    " longer) one is used.
-	    call search( '\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\%(\%(\u\|\d\|_\)\@!\k\)\+\ze\%(\u\|\d\)\|\u\%(\%(\u\|\d\|_\)\@!\k\)\+\|\%(\a\|\d\)\+\ze_\|\%(\k\@!\S\)\+\|\%(\%(\d\|_\)\@!\k\)\+\>', 'We' )
+	    call search( '\d\+\%(\%(\u\|\d\|_\)\@!\k\)*\|\u\+\ze\%(\u\l\|\d\|\%(\a\@!\k\)\)\|\%(\%(\u\|\d\|_\)\@!\k\)\+\ze\%(\u\|\d\)\|\u\%(\%(\u\|\d\|_\)\@!\k\)\+\|\%(\a\|\d\)\+\ze_\|\%(\%(\k\|_\)\@!\S\)\+\|\%(\%(\d\|_\)\@!\k\)\+\>', 'We' )
 	    " Note: word must be defined as '\k\>'; '\>' on its own somehow
 	    " dominates over the previous branch. Plus, \k must exclude the
 	    " underscore, or a trailing one will be incorrectly moved over, and
