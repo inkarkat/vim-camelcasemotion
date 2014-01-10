@@ -41,11 +41,16 @@ SOURCE									     *
 Based on vimtip #1016 by Anthony Van Ham
     http://vim.wikia.com/wiki/Moving_through_camel_case_words
 
-RELATED WORKS								     *
+SEE ALSO								     *
 
 - CamelCaseComplete (vimscript #3915) provides insert mode completion that
   expands CamelCaseWords and underscore_words based on anchor characters for
   each word fragment.
+
+RELATED WORKS								     *
+
+- mlessnau_case (vimscript #4641) provides sort-of text objects vic, dic, cic,
+  but it seems to use a simplistic regexp for selection.
 
 ==============================================================================
 USAGE						       *camelcasemotion-usage*
