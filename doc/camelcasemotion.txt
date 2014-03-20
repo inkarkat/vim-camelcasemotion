@@ -51,6 +51,8 @@ RELATED WORKS								     *
 
 - mlessnau_case (vimscript #4641) provides sort-of text objects vic, dic, cic,
   but it seems to use a simplistic regexp for selection.
+- txtobj-underscore (https://github.com/lucapette/vim-textobj-underscore) uses
+  vim-textobj-user to define a_ and i_ text objects.
 
 ==============================================================================
 USAGE						       *camelcasemotion-usage*
