@@ -175,6 +175,13 @@ additional mappings |,w|, |,b|  and |,e| : >
 In this case, you probably want to restore the special |camelcasemotion-c,w|
 behavior, too: >
     nmap cw ce
+For consistency, the |i_CTRL-W| command probably should observe the word
+fragments, too. This is a simplistic attempt: >
+    :imap <C-w> <C-o>d<Plug>CamelCaseMotion_ie
+But it fails when inside a word or with trailing whitespace. This is better,
+but it still fails at the beginning of a line: >
+    :inoremap <expr> <SID>(EnterMarker) (search('\k\%#', 'bcnW', line('.')) ? "<C-v>000" : "A") . "<C-\><C-n>h"
+    :imap <C-w> <SID>(EnterMarker)d<Plug>CamelCaseMotion_iws
 <
 EXAMPLE: Replace default |iw| text-object and define analog |ib| and  |ie|
 motions: >
