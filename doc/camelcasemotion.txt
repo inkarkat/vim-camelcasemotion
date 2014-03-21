@@ -178,10 +178,16 @@ behavior, too: >
 For consistency, the |i_CTRL-W| command probably should observe the word
 fragments, too. This is a simplistic attempt: >
     :imap <C-w> <C-o>d<Plug>CamelCaseMotion_ie
-But it fails when inside a word or with trailing whitespace. This is better,
-but it still fails at the beginning of a line: >
-    :inoremap <expr> <SID>(EnterMarker) (search('\k\%#', 'bcnW', line('.')) ? "<C-v>000" : "A") . "<C-\><C-n>h"
-    :imap <C-w> <SID>(EnterMarker)d<Plug>CamelCaseMotion_iws
+But it fails when inside a word or with trailing whitespace. This is better: >
+    function! s:DeletePreviousWord()
+	if col('.') == 1
+	    return "\<C-w>"
+	else
+	    let l:keys = (search('\k\%#', 'bcnW', line('.')) ? "\<C-v>000" : "A")
+	    return l:keys . "\<C-\>\<C-n>hd:call camelcasemotion#InnerMotion('w',v:count1)\<CR>s"
+	endif
+    endfunction
+    inoremap <expr> <C-w> <SID>DeletePreviousWord()
 <
 EXAMPLE: Replace default |iw| text-object and define analog |ib| and  |ie|
 motions: >
