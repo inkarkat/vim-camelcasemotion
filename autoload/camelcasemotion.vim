@@ -9,6 +9,9 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS
+"   2.00.010	22-Mar-2014	Add camelcasemotion#DeletePrevious() for a
+"				special i_CTRL-W replacement that observes
+"				CamelCase and underscore_words.
 "   2.00.009	11-Jan-2014	Factor out special treatment for visual and
 "				operator-pending motions to
 "				ingo#motion#helper#AdditionalMovement(), but
@@ -213,6 +216,25 @@ function! camelcasemotion#InnerMotion( direction, count )
 	normal! v
 	call camelcasemotion#Motion( a:direction, a:count, 'iv' )
     endif
+endfunction
+
+
+function! camelcasemotion#DeletePrevious()
+    if col('.') == 1 || search('^\s\+\%#', 'bcnW', line('.'))
+	" The CamelCase motion doesn't pull the existing text after the cursor
+	" up to the previous line; use the original command at the beginning of
+	" a line instead. Also, when there's just whitespace before the cursor,
+	" to avoid killing the entire line in one go.
+	return "\<C-w>"
+    endif
+
+    let s:save_virtualedit = &virtualedit
+    set virtualedit=onemore	" Without this, the last character in the line would be left over.
+    return "\<C-o>:call camelcasemotion#DeletePreviousCamelCase()\<CR>"
+endfunction
+function! camelcasemotion#DeletePreviousCamelCase()
+    execute "normal! d:call camelcasemotion#Motion('b', 1, 'o')\<CR>"
+    let &virtualedit = s:save_virtualedit
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
