@@ -1,7 +1,7 @@
 source helpers/common.vim
 
 function! s:RetrievePoints( markerText )
-    let l:markerText = (type(a:markerText) == type([]) ? a:markerText : [a:markerText])
+    let l:markerText = ingo#list#Make(a:markerText)
     let l:points = {}
     for l:line in range(len(l:markerText))
 	let l:idx = -1
