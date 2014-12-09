@@ -177,17 +177,10 @@ behavior, too: >
     nmap cw ce
 For consistency, the |i_CTRL-W| command probably should observe the word
 fragments, too. This is a simplistic attempt: >
-    :imap <C-w> <C-o>d<Plug>CamelCaseMotion_ie
-But it fails when inside a word or with trailing whitespace. This is better: >
-    function! s:DeletePreviousWord()
-	if col('.') == 1
-	    return "\<C-w>"
-	else
-	    let l:keys = (search('\k\%#', 'bcnW', line('.')) ? "\<C-v>000" : "A")
-	    return l:keys . "\<C-\>\<C-n>hd:call camelcasemotion#InnerMotion('w',v:count1)\<CR>s"
-	endif
-    endfunction
-    inoremap <expr> <C-w> <SID>DeletePreviousWord()
+    imap <C-w> <C-o>d<Plug>CamelCaseMotion_ie
+But it fails when inside a word or with trailing whitespace. Therefore, the
+plugin provides a special mapping for this: >
+    imap <C-w> <Plug>CamelCaseMotion_DeletePrevious
 <
 EXAMPLE: Replace default |iw| text-object and define analog |ib| and  |ie|
 motions: >
@@ -203,7 +196,7 @@ behavior, too: >
     runtime plugin/camelcasemotion.vim
     omap iw ie
     xmap iw ie
-
+<
 ==============================================================================
 LIMITATIONS					 *camelcasemotion-limitations*
 
@@ -253,6 +246,9 @@ HISTORY						     *camelcasemotion-history*
   mode "forward to end" motion.
 - BUG: Correct missing stop on ACRONYM at the end of a CamelCaseACRONYM.
   Reported by dlee at https://github.com/bkad/CamelCaseMotion/issues/8
+- Add <Plug>CamelCaseMotion_DeletePrevious mapping for a special i_CTRL-W
+  replacement that observes CamelCase and underscore_words. Thanks to Kartik
+  Agaram for the suggestion.
 - Add optional dependency to ingo-library (vimscript #4433).
 
 1.52	12-Nov-2011
