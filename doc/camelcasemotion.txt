@@ -162,7 +162,13 @@ T in opposite direction), you can remap it to ,,: >
 
 If you want to use different mappings, map your keys to the
 <Plug>CamelCaseMotion_? mapping targets _before_ sourcing the script (e.g. in
-your |vimrc|).
+your |vimrc|).					   *g:no_CamelCaseMotion_maps*
+If you only want a few of the available mappings, you can completely turn off
+the creation of the default mappings via: >
+    :let g:no_CamelCaseMotion_maps = 1
+This saves you from mapping dummy keys to all unwanted mapping targets.
+*g:CamelCaseMotion_NoMotionMappings* *g:CamelCaseMotion_NoTextObjectMappings*
+You can also do this selectively for either motions or text objects only.
 
 EXAMPLE: Replace the default |w|, |b| and |e| mappings instead of defining
 additional mappings |,w|, |,b|  and |,e| : >
@@ -249,6 +255,10 @@ HISTORY						     *camelcasemotion-history*
 - Add <Plug>CamelCaseMotion_DeletePrevious mapping for a special i_CTRL-W
   replacement that observes CamelCase and underscore_words. Thanks to Kartik
   Agaram for the suggestion.
+- Allow to disable all default mappings via g:no_CamelCaseMotion_maps. Here,
+  it may make sense because some users may only want a subset of the mappings,
+  and this saves them from defining a lot of dummy mappings. Also allow to do
+  this selectively for either motions or text objects only.
 - Add optional dependency to ingo-library (vimscript #4433).
 
 1.52	12-Nov-2011
