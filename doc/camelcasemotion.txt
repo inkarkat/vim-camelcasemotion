@@ -53,6 +53,9 @@ RELATED WORKS								     *
   but it seems to use a simplistic regexp for selection.
 - txtobj-underscore (https://github.com/lucapette/vim-textobj-underscore) uses
   vim-textobj-user to define a_ and i_ text objects.
+- wordmotion (vimscript #5334) overrides the built-in motions or add prefixed
+  variants that are quite similar to this plugin's, using regexp and search().
+  No text objects yet, and the implementation is more simplistic.
 
 ==============================================================================
 USAGE						       *camelcasemotion-usage*
@@ -318,7 +321,7 @@ First published version.
 Started development based on vimtip #1016 by Anthony Van Ham.
 
 ==============================================================================
-Copyright: (C) 2007-2014 Ingo Karkat
+Copyright: (C) 2007-2016 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
