@@ -1,4 +1,4 @@
-" Test forward motion on CamelCase words. 
+" Test forward motion on CamelCase_BugIsHere.
 source helpers/motionSequence.vim
 call vimtest#StartTap()
 
