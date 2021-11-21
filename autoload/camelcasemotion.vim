@@ -9,6 +9,8 @@
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 " REVISION	DATE		REMARKS
+"   2.00.012	10-Dec-2014	Rename camelcasemotion#InnerMotion() to
+"				camelcasemotion#TextObject().
 "   2.00.011	12-Jun-2014	Make test for 'virtualedit' option values also
 "				account for multiple values.
 "   2.00.010	22-Mar-2014	Add camelcasemotion#DeletePrevious() for a
@@ -194,7 +196,7 @@ function! camelcasemotion#Motion( direction, count, mode )
     endif
 endfunction
 
-function! camelcasemotion#InnerMotion( direction, count )
+function! camelcasemotion#TextObject( direction, count )
     " If the cursor is positioned on the first character of a CamelWord, the
     " backward motion would move to the previous word, which would result in a
     " wrong selection. To fix this, first move the cursor to the right, so that
