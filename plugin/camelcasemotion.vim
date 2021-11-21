@@ -11,6 +11,16 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   2.00.022	10-Dec-2014	Allow to disable all default mappings via
+"				g:no_CamelCaseMotion_maps. Here, it may make
+"				sense because some users may only want a subset
+"				of the mappings, and this saves them from
+"				defining a lot of dummy mappings. Also allow to
+"				do this selectively for either motions or text
+"				objects only.
+"				Rename camelcasemotion#InnerMotion() to
+"				camelcasemotion#TextObject() and the
+"				corresponding s:Create...() function, too.
 "   2.00.021	22-Mar-2014	Add <Plug>CamelCaseMotion_DeletePrevious mapping
 "				for a special i_CTRL-W replacement that observes
 "				CamelCase and underscore_words.
@@ -152,7 +162,7 @@ let g:loaded_camelcasemotion = 1
 " We do not provide the fourth "backward to end" motion (,E), because it is
 " seldomly used.
 
-function! s:CreateMotionMappings()
+function! s:CreateMotionMappings( isCreateDefaultMappings )
     " Create mappings according to this template:
     " (* stands for the mode [nov], ? for the underlying motion [wbe].)
     "
@@ -165,7 +175,7 @@ function! s:CreateMotionMappings()
 	for l:motion in ['w', 'b', 'e']
 	    let l:targetMapping = '<Plug>CamelCaseMotion_' . l:motion
 	    execute l:mode . 'noremap <silent> ' . l:targetMapping . ' :<C-U>call camelcasemotion#Motion(''' . l:motion . ''',v:count1,''' . l:mode . ''')<CR>'
-	    if ! hasmapto(l:targetMapping, l:mode)
+	    if a:isCreateDefaultMappings && ! hasmapto(l:targetMapping, l:mode)
 		execute (l:mode ==# 'v' ? 'x' : l:mode) . 'map ,' . l:motion . ' ' . l:targetMapping
 	    endif
 	endfor
@@ -182,31 +192,32 @@ endfunction
 " different behavior depending on whether visual mode has just been entered or
 " whether text has already been selected.
 " We deviate from that and always override the existing selection.
-function! s:CreateInnerMotionMappings()
+function! s:CreateTextObjectMappings( isCreateDefaultMappings )
     " Create mappings according to this template:
     " (* stands for the mode [ov], ? for the underlying motion [wbe].)
     "
-    " *noremap <silent> <Plug>CamelCaseMotion_i? :<C-U>call camelcasemotion#InnerMotion('?',v:count1)<CR>
-    " if ! hasmapto('<Plug>CamelCaseInnerMotion_i?', '*')
-    "	  *map i,? <Plug>CamelCaseInnerMotion_i?
+    " *noremap <silent> <Plug>CamelCaseMotion_i? :<C-U>call camelcasemotion#TextObject('?',v:count1)<CR>
+    " if ! hasmapto('<Plug>CamelCaseMotion_i?', '*')
+    "	  *map i,? <Plug>CamelCaseMotion_i?
     " endif
 
     for l:mode in ['o', 'v']
 	for l:motion in ['w', 'b', 'e']
 	    let l:targetMapping = '<Plug>CamelCaseMotion_i' . l:motion
-	    execute l:mode . 'noremap <silent> ' . l:targetMapping . ' :<C-U>call camelcasemotion#InnerMotion(''' . l:motion . ''',v:count1)<CR>'
-	    if ! hasmapto(l:targetMapping, l:mode)
+	    execute l:mode . 'noremap <silent> ' . l:targetMapping . ' :<C-U>call camelcasemotion#TextObject(''' . l:motion . ''',v:count1)<CR>'
+	    if a:isCreateDefaultMappings && ! hasmapto(l:targetMapping, l:mode)
 		execute (l:mode ==# 'v' ? 'x' : l:mode) . 'map i,' . l:motion . ' ' . l:targetMapping
 	    endif
 	endfor
     endfor
 endfunction
 
-call s:CreateMotionMappings()
-call s:CreateInnerMotionMappings()
-
+let s:isCreateDefaultMappings = ! exists('g:no_CamelCaseMotion_maps')
+    call s:CreateMotionMappings(s:isCreateDefaultMappings && ! exists('g:CamelCaseMotion_NoMotionMappings'))
+    call s:CreateTextObjectMappings(s:isCreateDefaultMappings && ! exists('g:CamelCaseMotion_NoTextObjectMappings'))
+unlet s:isCreateDefaultMappings
 delfunction s:CreateMotionMappings
-delfunction s:CreateInnerMotionMappings
+delfunction s:CreateTextObjectMappings
 
 inoremap <silent> <expr> <Plug>CamelCaseMotion_DeletePrevious camelcasemotion#DeletePrevious()
 
