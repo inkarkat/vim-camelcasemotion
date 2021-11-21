@@ -56,6 +56,13 @@ RELATED WORKS								     *
 - wordmotion (vimscript #5334) overrides the built-in motions or add prefixed
   variants that are quite similar to this plugin's, using regexp and search().
   No text objects yet, and the implementation is more simplistic.
+- vim-wordmotion (https://github.com/chaoren/vim-wordmotion) provides both
+  motions and text objects, has customizable mappings and extra separator
+  characters. Unlike most other implementations, it does not use complex
+  regular expressions.
+- vim-smartword (https://github.com/kana/vim-smartword) by default overrides
+  the built-in word motions, but only stops at 'iskeyword' characters. It does
+  not handle CamelCaseWords, though.
 
 ==============================================================================
 USAGE						       *camelcasemotion-usage*
@@ -321,7 +328,7 @@ First published version.
 Started development based on vimtip #1016 by Anthony Van Ham.
 
 ==============================================================================
-Copyright: (C) 2007-2016 Ingo Karkat
+Copyright: (C) 2007-2018 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
