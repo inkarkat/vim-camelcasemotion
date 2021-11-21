@@ -1,0 +1,28 @@
+"   Given the following CamelCase identifiers in a source code fragment:
+"	set Script31337PathAndNameWithoutExtension11=%~dpn0
+"	set Script31337PathANDNameWITHOUTExtension11=%~dpn0
+"   and the corresponding identifiers in underscore_notation:
+"	set script_31337_path_and_name_without_extension_11=%~dpn0
+"	set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
+" 
+" The well-known MapPPPP123Roblem or MaP1Roblem is there. 
+" Cp. VCSCommandMapping
+" CamelCaseWordAtTheEndOfLine
+" underscore_word_at_the_END_OF_LINE
+" CamelCase_Word Script_31337Path_AndName_AND_WithoutExtension11_FOO_FooBar foo
+   
+|     | |    |  |   |  |   ||| |  |   ||     |   |    |  |   |    |    |||  |
+press w when on top of the '1' in 1234.56789 you jump to the '.', then '5', then
+    | |    |  |   |  |   | |||  |    ||    |   |    |  |   |    |    | || |    |
+
+
+default (|) / camelcase (|^) forward (above) / backward (below) motion:
+   |    v    |  |  ||    || | | |       |     v    |
+   HelloWorld() // .print's a @@message Hello_World!!
+       ^    | |  | |    ||| |  |      |     ^     | |
+
+visual mode inclusive default (|) / camelcase (|^) forward (above) / backward (below) motion:
+   |   v    |  |  ||    || | | |       |     v    |
+   HelloWorld() // .print's a @@message Hello_World!!
+       ^    | |  | |    ||| |  |      |     ^     | |
+                         * missing with selection=exclusive
