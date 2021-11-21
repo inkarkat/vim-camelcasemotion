@@ -35,6 +35,7 @@ function! TestMotionSequenceWithSetting( lines, cursorPoints, motionMapping, sta
 	    call vimtap#Fail('cursor did not move: ' . string(l:currentPos))
 	    return
 	endif
+	let l:prevPos = l:currentPos
 
 	let l:description = printf('%s over %s, motion #%d, %s', a:motionMapping, a:description, l:cnt + 1, a:setting)
 	let l:point = l:points[l:cnt]
