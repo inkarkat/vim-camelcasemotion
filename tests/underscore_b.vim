@@ -8,7 +8,7 @@ call TestMotionSequence(
 \   ',b', '$', 'underscore_line')
 call TestMotionSequence(
 \   'set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_##11##_ss',
-\   'j   i      h     g    f   e    d       c         b      a ',
+\   'k   j      i     h    g   f    e       d         c b    a ',
 \   ',b', '$', 'UNDERSCORE_LINE')
 
 call vimtest#Quit()
