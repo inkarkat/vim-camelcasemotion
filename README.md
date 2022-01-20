@@ -1,0 +1,355 @@
+CAMEL CASE MOTION
+===============================================================================
+_by Ingo Karkat_
+
+DESCRIPTION
+------------------------------------------------------------------------------
+
+Vim provides many built-in motions, e.g. to move to the next word, or end of
+the current word. Most programming languages use either CamelCase
+("anIdentifier") or underscore\_notation ("an\_identifier") naming conventions
+for identifiers. The best way to navigate inside those identifiers using Vim
+built-in motions is the [count]f{char} motion, i.e. f{uppercase-char} or f\_,
+respectively. But we can make this easier:
+
+This plugin defines motions ,w ,b and ,e (similar to w b e), which do
+not move word-wise (forward/backward), but Camel-wise; i.e. to word boundaries
+and uppercase letters. The motions also work on underscore notation, where
+words are delimited by underscore ('\_') characters. From here on, both
+CamelCase and underscore\_notation entities are referred to as "words" (in
+double quotes). Just like with the regular motions, a [count] can be prepended
+to move over multiple "words" at once. Outside of "words" (e.g. in non-keyword
+characters like // or ;), the new motions move just like the regular motions.
+
+Vim provides a built-in iw text object called 'inner word', which works in
+operator-pending and visual mode. Analog to that, this plugin defines inner
+"word" text objects i,w i,b and i,e, which select the "word" (or
+multiple "words" if a [count] is given) where the cursor is located.
+
+### SOURCE
+
+- [Based on vimtip #1016 by Anthony Van Ham](http://vim.wikia.com/wiki/Moving_through_camel_case_words)
+
+### SEE ALSO
+
+- CamelCaseComplete ([vimscript #3915](http://www.vim.org/scripts/script.php?script_id=3915)) provides insert mode completion that
+  expands CamelCaseWords and underscore\_words based on anchor characters for
+  each word fragment.
+
+### RELATED WORKS
+
+- mlessnau\_case ([vimscript #4641](http://www.vim.org/scripts/script.php?script_id=4641)) provides sort-of text objects vic, dic, cic,
+  but it seems to use a simplistic regexp for selection.
+- txtobj-underscore (https://github.com/lucapette/vim-textobj-underscore) uses
+  vim-textobj-user to define a\_ and i\_ text objects.
+- wordmotion ([vimscript #5334](http://www.vim.org/scripts/script.php?script_id=5334)) overrides the built-in motions or add prefixed
+  variants that are quite similar to this plugin's, using regexp and search().
+  No text objects yet, and the implementation is more simplistic.
+- vim-wordmotion (https://github.com/chaoren/vim-wordmotion) provides both
+  motions and text objects, has customizable mappings and extra separator
+  characters. Unlike most other implementations, it does not use complex
+  regular expressions.
+- vim-smartword (https://github.com/kana/vim-smartword) by default overrides
+  the built-in word motions, but only stops at 'iskeyword' characters. It does
+  not handle CamelCaseWords, though.
+
+USAGE
+------------------------------------------------------------------------------
+
+### MOTIONS
+
+    Use the new motions ,w ,b and ,e in normal mode, operator-pending mode
+    (cp. operator), and visual mode. For example, type bc,w to change "Camel"
+    in "CamelCase" to something else.
+
+### EXAMPLE
+
+Given the following CamelCase identifiers in a source code fragment:
+```
+    set Script31337PathAndNameWithoutExtension11=%~dpn0
+    set Script31337PathANDNameWITHOUTExtension11=%~dpn0
+```
+and the corresponding identifiers in underscore\_notation:
+```
+    set script_31337_path_and_name_without_extension_11=%~dpn0
+    set SCRIPT_31337_PATH_AND_NAME_WITHOUT_EXTENSION_11=%~dpn0
+```
+
+,w moves to ([x] is cursor position): [s]et, [s]cript, [3]1337, [p]ath,
+    [a]nd, [n]ame, [w]ithout, [e]xtension, [1]1, [d]pn0, dpn[0], [s]et
+,b moves to: [d]pn0, [1]1, [e]xtension, [w]ithout, ...
+,e moves to: se[t], scrip[t], 3133[7], pat[h], an[d], nam[e], withou[t],
+    extensio[n], 1[1], dpn[0]
+
+### TEXT OBJECTS
+
+i,w                 "inner "word" forward", select [count] "words", including
+                    the _ separator in underscore_notation
+i,b                 "inner "word" backward", select [count] "words" from the
+                    cursor position to the left, excluding the _ separator in
+                    underscore_notation
+i,e                 "inner to the end of "word"", select [count] "words",
+                    excluding the _ separator in underscore_notation
+
+                    Inside CamelWords, there is no difference between i,w
+                    and i,e. Unless [count] is larger than 1, i,b and
+                    i,e are identical.
+### EXAMPLE
+
+Given the following identifier, with the cursor positioned at [x]:
+```
+    script_31337_path_and_na[m]e_without_extension_11
+```
+
+v3i,w selects script\_31337\_path\_and\_[name\_without\_extension\_]11
+v3i,b selects script\_31337\_[path\_and\_name]\_without\_extension\_11
+v3i,e selects script\_31337\_path\_and\_[name\_without\_extension]\_11
+Instead of visual mode, you can also use c3i,w to change, d3i,w to delete,
+gU3i,w to upper-case, and so on.
+
+### BOUNDARIES
+
+All the normal word boundaries of the w, b, and e motions apply here as
+well: whitespace, sequences of keyword characters and non-keyword-characters.
+Boundaries between underscore\_notation are defined by the "\_" character.
+A new CamelWord starts with an uppercase letter ("Camel", "ACRONYM", "C####")
+or a number ("123", "42foo#bar").
+
+INSTALLATION
+------------------------------------------------------------------------------
+
+The code is hosted in a Git repo at
+    https://github.com/inkarkat/vim-camelcasemotion
+You can use your favorite plugin manager, or "git clone" into a directory used
+for Vim packages. Releases are on the "stable" branch, the latest unstable
+development snapshot on "master".
+
+This script is also packaged as a vimball. If you have the "gunzip"
+decompressor in your PATH, simply edit the \*.vmb.gz package in Vim; otherwise,
+decompress the archive first, e.g. using WinZip. Inside Vim, install by
+sourcing the vimball or via the :UseVimball command.
+
+    vim camelcasemotion*.vmb.gz
+    :so %
+
+To uninstall, use the :RmVimball command.
+
+### DEPENDENCIES
+
+- Requires Vim 7.0 or higher.
+- ingo-library.vim plugin ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)), version 1.016 or higher
+  (optional).
+
+CONFIGURATION
+------------------------------------------------------------------------------
+
+For a permanent configuration, put the following commands into your vimrc:
+
+There's a special case dating back to vi that cw does not include the
+whitespace after a word; it works like ce. If you want the same special case
+for the c,w motion and ciw text object, define the following additional
+mapping:
+
+    nmap c,w c,e
+
+Likewise, the iw text object does not include trailing whitespace. If you
+want the camelcasemotion text objects behave the same way, add:
+
+    " Must define the default mappings first in order to change them.
+    runtime plugin/camelcasemotion.vim
+    omap i,w i,e
+    xmap i,w i,e
+
+If you're using different mappings (see below), you need to adapt the
+arguments, naturally.
+
+By default, all mappings start with , (comma) as the map leader instead of
+using &lt;Leader&gt;. I personally find the default &lt;Leader&gt; key too far off the
+keyboard to be useful for custom motions (which also cannot be repeated via
+the . (dot) command, so they should be very fast to type repeatedly), but
+quite suitable for general, less frequently used custom mappings.
+To avoid losing the (rarely used) , mapping (which repeats latest f, t, F or
+T in opposite direction), you can remap it to ,,:
+
+    nnoremap ,, ,
+    xnoremap ,, ,
+    onoremap ,, ,
+
+If you want to use different mappings, map your keys to the
+&lt;Plug&gt;CamelCaseMotion\_? mapping targets _before_ sourcing the script (e.g. in
+your vimrc).
+If you only want a few of the available mappings, you can completely turn off
+the creation of the default mappings via:
+
+    :let g:no_CamelCaseMotion_maps = 1
+
+This saves you from mapping dummy keys to all unwanted mapping targets.
+
+You can also do this selectively for either motions or text objects only.
+
+EXAMPLE: Replace the default w, b and e mappings instead of defining
+additional mappings ,w, ,b  and ,e :
+
+    map w <Plug>CamelCaseMotion_w
+    map b <Plug>CamelCaseMotion_b
+    map e <Plug>CamelCaseMotion_e
+    sunmap w
+    sunmap b
+    sunmap e
+
+In this case, you probably want to restore the special camelcasemotion-c,w
+behavior, too:
+
+    nmap cw ce
+
+For consistency, the i\_CTRL-W command probably should observe the word
+fragments, too. This is a simplistic attempt:
+
+    imap <C-w> <C-o>d<Plug>CamelCaseMotion_ie
+
+But it fails when inside a word or with trailing whitespace. Therefore, the
+plugin provides a special mapping for this:
+
+    imap <C-w> <Plug>CamelCaseMotion_DeletePrevious
+
+EXAMPLE: Replace default iw text-object and define analog ib and  ie
+motions:
+
+    omap iw <Plug>CamelCaseMotion_iw
+    xmap iw <Plug>CamelCaseMotion_iw
+    omap ib <Plug>CamelCaseMotion_ib
+    xmap ib <Plug>CamelCaseMotion_ib
+    omap ie <Plug>CamelCaseMotion_ie
+    xmap ie <Plug>CamelCaseMotion_ie
+
+In this case, you probably want to restore the special camelcasemotion-c,w
+behavior, too:
+
+    " Must define the default mappings first in order to change them.
+    runtime plugin/camelcasemotion.vim
+    omap iw ie
+    xmap iw ie
+
+LIMITATIONS
+------------------------------------------------------------------------------
+
+- The c,w mapping includes the whitespace after the word, but built-in cw does
+  not. This is a Vim special case that custom motions cannot replicate. Cp.
+  cw
+
+### KNOWN PROBLEMS
+
+- A degenerate CamelCaseWord containing '\\U\\u\\d' (e.g. "MaP1Roblem") confuses
+  the operator-pending and visual mode ,e mapping if 'selection' is not set to
+  "exclusive". It'll skip "P" and select "P1" in one step. As a workaround,
+  use ',w' instead of ',e'; those two mappings have the same effect inside
+  CamelCaseWords, anyway.
+- When the Vim setting 'selection' is not set to "exclusive", a
+  forward-backward combination in visual mode (e.g. 'v,w,b') selects one
+  additional character to the left, instead of only the character where the
+  motion started. Likewise, extension of the visual selection from the front
+  end is off by one additional character.
+- A repeat (via .) of the operator-pending mapping loses the previously
+  given [count], and operates on just one fragment.
+
+IDEAS
+------------------------------------------------------------------------------
+
+- Make separator character (currently underscore) configurable so that dashes,
+  asterisks, etc. can be added as well. Idea is to replace the single /\_/ with
+  a collection /[-\_\*]/ built from g:CamelCaseMotion\_SeparatorCharacters. Check
+  out interference with containment in 'iskeyword' and think through need to
+  buffer-local setting. (Submitted anonymously 13-Nov-2010 on Vim Tips Wiki.)
+- Replace complex and indecipherable search regexps with a state machine that
+  moves from character to character, in the hope that it will actually be
+  understandable, and may eventually even be turned into a C implementation
+  that goes into Vim core.
+- Except for some special cases in camelcasemotion#Motion(), couldn't we use
+  the CountJump plugin and just supply a:Move() as the jump function?
+
+### CONTRIBUTING
+
+Report any bugs, send patches, or suggest features via the issue tracker at
+https://github.com/inkarkat/vim-camelcasemotion/issues or email (address
+below).
+
+HISTORY
+------------------------------------------------------------------------------
+
+##### 2.00    RELEASEME
+- Many motion fixes due to enhanced test suite, most to support any keyword
+  character in addition to lowercase letters.
+- Also handle move to the buffer's very last character in operator-pending
+  mode "forward to end" motion.
+- BUG: Correct missing stop on ACRONYM at the end of a CamelCaseACRONYM.
+  Reported by dlee at https://github.com/bkad/CamelCaseMotion/issues/8
+- Add &lt;Plug&gt;CamelCaseMotion\_DeletePrevious mapping for a special i\_CTRL-W
+  replacement that observes CamelCase and underscore\_words. Thanks to Kartik
+  Agaram for the suggestion.
+- Allow to disable all default mappings via g:no\_CamelCaseMotion\_maps. Here,
+  it may make sense because some users may only want a subset of the mappings,
+  and this saves them from defining a lot of dummy mappings. Also allow to do
+  this selectively for either motions or text objects only.
+- Add optional dependency to ingo-library ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)).
+
+##### 1.52    12-Nov-2011
+- FIX: Correct forward-to-end motion over lowercase part in "lowerCamel".
+  Found this by chance in GitHub fork by Kevin Lee (bkad).
+- BUG: Correct wrong stop on second letter of ACRONYM at the beginning of a
+  word "AXBCText".
+- The motion functionality is automatically tested via a runVimTests
+  ([vimscript #2565](http://www.vim.org/scripts/script.php?script_id=2565)) test suite.
+
+##### 1.51    30-Sep-2011 (unreleased)
+- Use &lt;silent&gt; for &lt;Plug&gt; mapping instead of default mapping.
+
+##### 1.50    05-May-2009
+- Do not create mappings for select mode; according to Select-mode,
+  printable character commands should delete the selection and insert the
+  typed characters. Now using :xmap to only target visual mode.
+- Moved functions from plugin to separate autoload script.
+- Split off documentation into separate help file. Now packaging as VimBall.
+
+##### 1.40    30-Jun-2008
+- BF: Now using :normal! to be independent from any user mappings. Thanks to
+Neil Walker for the patch.
+
+##### 1.40    19-May-2008
+- BF: Wrong forward motion stop at the second digit if a word starts with
+multiple numbers (e.g. 1234.56789). Thanks to Wasim Ahmed for reporting this.
+
+##### 1.40    24-Apr-2008
+- ENH: Added inner "word" text objects 'i,w' etc. that work analoguous to the
+built-in iw text object. Thanks to David Kotchan for this suggestion.
+
+##### 1.30    20-Apr-2008
+- The motions now also stop at non-keyword boundaries, just like the regular
+motions. This has no effect inside a CamelCaseWord or inside
+underscore\_notation, but it makes the motions behave like the regular motions
+(which is important if you replace the default motions). Thanks to Mun Johl
+for reporting this.
+
+##### 1.30    09-Apr-2008
+- Allowing users to use mappings different than ,w ,b ,e by defining
+  &lt;Plug&gt;CamelCaseMotion\_? target mappings. This can even be used to replace
+  the default 'w', 'b' and 'e' mappings, as suggested by Mun Johl.
+- Now requires VIM 7.0 or higher.
+
+##### 1.20    29-May-2007
+- ENH: The visual mode motions now also (mostly) work with the (default) setting
+'set selection=inclusive', instead of selecting one character too much.
+
+##### 1.10    28-May-2007
+- Incorporated major improvements and simplifications done by Joseph Barker.
+
+##### 1.00    22-May-2007
+- First published version.
+
+##### 0.01    11-Oct-2005
+- Started development based on vimtip #1016 by Anthony Van Ham.
+
+------------------------------------------------------------------------------
+Copyright: (C) 2007-2022 Ingo Karkat -
+The [VIM LICENSE](http://vimdoc.sourceforge.net/htmldoc/uganda.html#license) applies to this plugin.
+
+Maintainer:     Ingo Karkat &lt;ingo@karkat.de&gt;
